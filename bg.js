@@ -20,10 +20,10 @@ var getVideoIdFromUrl = function(url) {
   return video;
 };
 
-var savedVideos = [];
+var savedVideos;
 
 chrome.storage.local.get("videos", function(items) {
-  savedVideos = items.videos;
+  savedVideos = items.videos || [];
 });
 
 var isVideoAlreadySaved = function(videoId) {
