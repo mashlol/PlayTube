@@ -1,0 +1,283 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    color: #222;
+    background: #eee;
+    width: 480px;
+    height: 480px;
+}
+
+#templates {
+    display: none;
+}
+
+.controls {
+    height: 80px;
+    background: #34495e;
+    padding: 7.5px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+    box-shadow: 0 0 5px black;
+}
+
+.controls button {
+    width: 35px;
+    height: 35px;
+    background: #34495e;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    color: white;
+}
+
+.controls .play-pause {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+}
+
+.controls .play-pause i {
+    position: relative;
+    top: 2px;
+}
+
+.controls button:hover {
+    background: #2c3e50;
+}
+
+.add {
+    float: right;
+    margin-top: 5px;
+}
+
+.container {
+    width: 480px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 480px;
+}
+
+.playlist {
+    margin-top: 80px;
+    height: 400px;
+    overflow-y: scroll;
+}
+
+.background, .tint {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 102%;
+    height: 130%;
+    -webkit-filter: blur(5px);
+    background-size: 100%;
+    margin-top: -2%;
+    margin-left: -1%;
+    background-position-y: -40px;
+}
+
+.tint {
+    background: black;
+    opacity: 0.4;
+    z-index: 0;
+}
+
+.song:hover .tint {
+    opacity: 0.6;
+}
+
+.song {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    height: 60px;
+    line-height: 60px;
+}
+
+.song.selected {
+    height: 75px;
+    margin-top: -7.5px;
+    z-index: 999;
+    margin-bottom: -7.5px;
+    line-height: 75px;
+    box-shadow: 0 0 5px 1px black;
+}
+
+.song-title {
+    position: absolute;
+    z-index: 1;
+    left: 60px;
+    text-overflow: ellipsis;
+    width: 330px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.song-length {
+    position: absolute;
+    z-index: 1;
+    right: 10px;
+}
+
+.song .play-pause {
+    color: white;
+    position: absolute;
+    z-index: 1;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    top: 10px;
+    outline: none;
+    cursor: pointer;
+}
+
+.song.selected .play-pause {
+    top: 17.5px;
+}
+
+.song .play-pause:hover {
+    color: #eee;
+}
+
+::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+    background: #222;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+}
+
+::-webkit-scrollbar-corner {
+    background: #eee;
+}
+
+.song-progress {
+    background: green;
+    height: 1px;
+    position: absolute;
+    bottom: 0;
+    width: 0%;
+    left: 0;
+    box-shadow: 0 0 12px 1px green;
+    -webkit-transition: all 400ms linear;
+}
+
+.selected-title {
+    color: #fff;
+    margin-left: 10px;
+    text-overflow: ellipsis;
+    width: 230px;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.sliders {
+    position: absolute;
+    bottom: 3px;
+    width: 100%;
+    height: 20px;
+    left: 0;
+    line-height: 20px;
+    color: white;
+    padding: 0 5px;
+}
+
+input[type=range] {
+    vertical-align: middle;
+    -webkit-appearance: none;
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 10px;
+    width: 3px;
+    /*border-radius: 50%;*/
+    background: green;
+    margin-top: -3px;
+    box-shadow: 0 0 12px 1px green;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    height: 4px;
+    background: #fff;
+    border: none;
+}
+
+.volume-slider {
+    width: 66px;
+    margin-right: 3px;
+    margin-top: -1px;
+}
+
+.fa-volume-off {
+    margin-right: 5px;
+}
+
+.volume {
+    margin-left: 16px;
+    display: inline-block;
+}
+
+.location {
+    display: inline-block;
+    margin-left: 24px;
+}
+
+.location-slider {
+    width: 250px;
+    margin-right: 10px;
+}
+
+.song-remove {
+    color: white;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: none;
+    border: none;
+    top: 10px;
+    outline: none;
+    cursor: pointer;
+    right: 5px;
+    z-index: 2;
+    font-size: 16px;
+    display: none;
+}
+
+.song-remove:hover, .song .play-pause:hover {
+    background: rgba(0,0,0,0.5);
+}
+
+.song.selected .song-remove {
+    top: 17.5px;
+}
+
+.song:hover .song-remove {
+    display: block;
+}
+
+.song:hover .song-length {
+    right: 50px;
+}
+
+.song:hover .song-title {
+    width: 300px;
+}

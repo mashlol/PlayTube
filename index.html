@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SongTube</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,400,300,600' rel='stylesheet' type='text/css'>
+    <link href="./css/font-awesome.css" rel="stylesheet" />
+    <link href="./css/style.css" rel="stylesheet" />
+
+    <script src="./js/jquery.min.js"></script>
+
+    <script src="./js/script.js"></script>
+</head>
+<body>
+    <div id="templates">
+        <div class="song" video="sOD8rQdz0Mg">
+            <div class="background"></div>
+            <div class="tint"></div>
+            <button class="play-pause"><i class="fa fa-play"></i></button>
+            <div class="song-title"></div>
+            <div class="song-length"><span class="song-curtime"></span> <span class="song-duration"></span></div>
+            <div class="song-progress"></div>
+            <button class="song-remove"><i class="fa fa-times"></i></button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="controls">
+            <button class="previous"><i class="fa fa-step-backward"></i></button>
+            <button class="play-pause"><i class="fa fa-play"></i></button>
+            <button class="next"><i class="fa fa-step-forward"></i></button>
+
+            <span class="selected-title"></span>
+
+            <button class="add"><i class="fa fa-plus"></i></button>
+            <div class="sliders">
+                <div class="volume">
+                    <i class="fa fa-volume-off"></i>
+                    <input class="volume-slider" type="range" min="0" max="100" step="0.1" value="50" />
+                    <i class="fa fa-volume-down"></i>
+                </div>
+                <div class="location">
+                    <input class="location-slider" type="range" min="0" max="100" step="0.1" />
+                    <span class="selected-length">0:00 / 0:00</span>
+                </div>
+            </div>
+        </div>
+        <div class="playlist">
+        </div>
+    </div>
+</body>
+</html>
