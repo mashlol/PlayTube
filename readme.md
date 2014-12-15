@@ -8,6 +8,13 @@ PlayTube is a chrome extension with an end goal of being the best music streamin
 Currently you can create individual playlists (stored locally) using the chrome extension.  You can control everything you might do normally on YouTube or spotify from within the extension (volume controls, song scrubber, unlimited skips, no ads (just YouTube ads)).
 
 
+### Usage
+
+* Install the chrome extension (current, that means cloning this repo and adding as a developer extension)
+* Navigate to YouTube videos you want to add to your playlist
+* Click the extension button, and click the add button in the top right to add the song to your playlist
+* Use the controls to control your playlist
+
 ### Todo
 
 * Shuffle (Ideally this will build a shuffled version of your playlist and play that - so the same song won't repeat until all other songs have played at least once)
