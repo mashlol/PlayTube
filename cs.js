@@ -1,3 +1,21 @@
+var getVideoIdFromUrl = function(url) {
+  if (url.indexOf("youtube.com") == -1) {
+    return false;
+  }
+
+  var start = url.indexOf("v=");
+  var end = url.indexOf("&", start);
+
+  var video;
+  if (end == -1) {
+    video = url.substr(start+2);
+  } else {
+    video = url.substring(start+2, end);
+  }
+
+  return video;
+};
+
 var looper = function() {
   if (!isPlayTab) {
     return;
@@ -57,7 +75,6 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-
 chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
   isPlayTab = response.isPlayTab;
   if (isPlayTab) {
@@ -65,3 +82,56 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
           response.volume / 100;
   }
 });
+
+if (window.location.host.indexOf("youtube") != -1
+          && window.location.pathname == "/watch") {
+
+  var videoId = getVideoIdFromUrl(window.location.href);
+
+  chrome.runtime.sendMessage({
+      action: "isVideoAlreadySaved",
+      videoId: videoId
+    }, function(response) {
+
+      var hasSaved = false;
+
+      var btn = document.createElement("button");
+      btn.style.height = "28px";
+      btn.style.background = "#167ac6";
+      btn.style.float = "right";
+      btn.style.color = "white";
+      btn.style.cursor = "pointer";
+      btn.style.padding = "0 10px";
+
+      btn.onmouseover = function() {
+        btn.style.background = "#2793e6";
+      }
+
+      btn.onmouseout = function() {
+        btn.style.background = "#167ac6";
+      }
+
+      document.getElementById("watch-headline-title").appendChild(btn);
+
+      if (!response) {
+        btn.innerHTML = "✚ &nbsp;Save";
+
+        btn.onclick = function() {
+          if (hasSaved) return;
+
+          chrome.runtime.sendMessage({
+            action: "add",
+            video: videoId,
+            title: document.getElementById("eow-title").innerHTML.trim(),
+            duration: document.getElementsByClassName("ytp-time-duration")[0]
+                          .innerHTML.trim(),
+          });
+          btn.innerHTML = "✓ &nbsp;Saved";
+          hasSaved = true;
+        };
+      } else {
+        btn.innerHTML = "✓ &nbsp;Saved";
+      }
+  });
+
+}

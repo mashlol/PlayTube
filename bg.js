@@ -26,9 +26,19 @@ chrome.storage.local.get("videos", function(items) {
   savedVideos = items.videos;
 });
 
+var isVideoAlreadySaved = function(videoId) {
+  for (var x = 0; x < savedVideos.length; x++) {
+    if (savedVideos[x].video == videoId) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 var saveVideos = function() {
   chrome.storage.local.set({videos: savedVideos});
-}
+};
 
 var currentVideo = 0;
 var isPlaying = false;
@@ -134,6 +144,10 @@ chrome.runtime.onMessage.addListener(
         action: "updateLocation",
         location: request.location
       });
+    }
+
+    if (request.action == "isVideoAlreadySaved") {
+      sendResponse(isVideoAlreadySaved(request.videoId));
     }
   }
 );
