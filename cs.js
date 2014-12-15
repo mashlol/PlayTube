@@ -72,6 +72,12 @@ chrome.runtime.onMessage.addListener(
             duration * (location / 100);
       }
     }
+
+    if (request.action == "urlChanged") {
+      setTimeout(function() {
+        addSaveButton();
+      }, 1500);
+    }
   }
 );
 
@@ -83,55 +89,63 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
   }
 });
 
-if (window.location.host.indexOf("youtube") != -1
-          && window.location.pathname == "/watch") {
+var addSaveButton = function() {
+  if (document.getElementById("pt-save-button")) {
+    return;
+  }
 
-  var videoId = getVideoIdFromUrl(window.location.href);
+  if (window.location.host.indexOf("youtube") != -1
+            && window.location.pathname == "/watch") {
 
-  chrome.runtime.sendMessage({
-      action: "isVideoAlreadySaved",
-      videoId: videoId
-    }, function(response) {
+    var videoId = getVideoIdFromUrl(window.location.href);
 
-      var hasSaved = false;
+    chrome.runtime.sendMessage({
+        action: "isVideoAlreadySaved",
+        videoId: videoId
+      }, function(response) {
+        var hasSaved = false;
 
-      var btn = document.createElement("button");
-      btn.style.height = "28px";
-      btn.style.background = "#167ac6";
-      btn.style.float = "right";
-      btn.style.color = "white";
-      btn.style.cursor = "pointer";
-      btn.style.padding = "0 10px";
-
-      btn.onmouseover = function() {
-        btn.style.background = "#2793e6";
-      }
-
-      btn.onmouseout = function() {
+        var btn = document.createElement("button");
+        btn.style.height = "28px";
         btn.style.background = "#167ac6";
-      }
+        btn.style.float = "right";
+        btn.style.color = "white";
+        btn.style.cursor = "pointer";
+        btn.style.padding = "0 10px";
 
-      document.getElementById("watch-headline-title").appendChild(btn);
+        btn.id = "pt-save-button";
 
-      if (!response) {
-        btn.innerHTML = "✚ &nbsp;Save";
-
-        btn.onclick = function() {
-          if (hasSaved) return;
-
-          chrome.runtime.sendMessage({
-            action: "add",
-            video: videoId,
-            title: document.getElementById("eow-title").innerHTML.trim(),
-            duration: document.getElementsByClassName("ytp-time-duration")[0]
-                          .innerHTML.trim(),
-          });
-          btn.innerHTML = "✓ &nbsp;Saved";
-          hasSaved = true;
+        btn.onmouseover = function() {
+          btn.style.background = "#2793e6";
         };
-      } else {
-        btn.innerHTML = "✓ &nbsp;Saved";
-      }
-  });
 
-}
+        btn.onmouseout = function() {
+          btn.style.background = "#167ac6";
+        };
+
+        document.getElementById("watch-headline-title").appendChild(btn);
+
+        if (!response) {
+          btn.innerHTML = "✚ &nbsp;Save";
+
+          btn.onclick = function() {
+            if (hasSaved) return;
+
+            chrome.runtime.sendMessage({
+              action: "add",
+              video: videoId,
+              title: document.getElementById("eow-title").innerHTML.trim(),
+              duration: document.getElementsByClassName("ytp-time-duration")[0]
+                            .innerHTML.trim(),
+            });
+            btn.innerHTML = "✓ &nbsp;Saved";
+            hasSaved = true;
+          };
+        } else {
+          btn.innerHTML = "✓ &nbsp;Saved";
+        }
+    });
+  }
+};
+
+addSaveButton();

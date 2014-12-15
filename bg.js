@@ -64,6 +64,12 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
     isPlaying = false;
     sendMessage({action: "update", isPlaying: false});
   }
+
+  if (changeInfo.url && changeInfo.url.indexOf("youtube") != -1) {
+    chrome.tabs.getSelected(null, function(tab) {
+      chrome.tabs.sendMessage(tab.id, {action: "urlChanged"});
+    });
+  }
 });
 
 chrome.tabs.onActivated.addListener(function(activeInfo) {
