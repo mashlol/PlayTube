@@ -39,7 +39,6 @@ var oldActiveTabId;
 
 chrome.tabs.getSelected(null, function(tab) {
   oldActiveTabId = tab.id;
-  console.log("set old active tab id", oldActiveTabId);
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId) {
@@ -154,8 +153,6 @@ var createVideoTabIfNotExists = function(callback) {
 };
 
 var playVideo = function(video) {
-  console.log("PLAYING VIDEO: " + video);
-  console.log("NUM VIDEOS: " + savedVideos.length);
   createVideoTabIfNotExists(function(tab) {
     if (tab.url.indexOf(savedVideos[video].video) != -1) {
       chrome.tabs.sendMessage(tab.id, {action: "clickVideo"});

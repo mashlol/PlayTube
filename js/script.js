@@ -114,7 +114,6 @@ var togglePlayPause = function($videoEle) {
 };
 
 var addVideoEle = function(video, index) {
-  console.log("Adding video ", video);
   $newSong = $("#templates .song").clone();
 
   $newSong.find(".song-title").html(video.title);
@@ -131,7 +130,7 @@ var addVideoEle = function(video, index) {
   $newSong.attr("videoId", video.video);
 
   $(".playlist").append($newSong);
-}
+};
 
 var isVideoAlreadySaved = function(videoId) {
   for (var x = 0; x < $(".playlist .song").length; x++) {
@@ -163,7 +162,6 @@ var getVideoIdFromUrl = function(url) {
 
 $(function() {
   $(".controls .play-pause").on("click", function(event) {
-    console.log(event);
     togglePlayPause($(this));
   });
 
@@ -186,6 +184,22 @@ $(function() {
     sendMessage({
       action: "updateLocation",
       location: $(".controls .location-slider").val()
+    });
+  });
+
+  $(".controls .search").on("click", function() {
+    $(".search-bar").toggleClass("visible");
+  });
+
+  $(".search-bar").on("input", function() {
+    var query = $(".search-bar").val().toLowerCase();
+    $(".playlist .song").each(function() {
+      var songName = $(this).find(".song-title").html().toLowerCase();
+      if (songName.indexOf(query) == -1) {
+        $(this).hide();
+      } else {
+        $(this).show();
+      }
     });
   });
 

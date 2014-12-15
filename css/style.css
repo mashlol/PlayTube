@@ -113,6 +113,11 @@ body {
     box-shadow: 0 0 5px 1px black;
 }
 
+.song.selected .tint {
+    background: #999;
+    opacity: 0.1;
+}
+
 .song-title {
     position: absolute;
     z-index: 1;
@@ -172,8 +177,13 @@ body {
     bottom: 0;
     width: 0%;
     left: 0;
-    box-shadow: 0 0 12px 1px green;
+    box-shadow: 0 0 40px 6px green;
     -webkit-transition: all 400ms linear;
+}
+
+.song-progress.top {
+    top: 0;
+    bottom: auto;
 }
 
 .selected-title {
@@ -280,4 +290,26 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .song:hover .song-title {
     width: 300px;
+}
+
+.search {
+    float: right;
+    margin-top: 5px;
+}
+
+.search-bar {
+    position: absolute;
+    top: 15px;
+    height: 30px;
+    left: 140px;
+    border-radius: 12px;
+    border: 0;
+    outline: none;
+    width: 0;
+    -webkit-transition: all 250ms ease-in-out;
+}
+
+.search-bar.visible {
+    padding: 10px;
+    width: 250px;
 }
