@@ -202,13 +202,13 @@ body {
 }
 
 .song-progress {
-    background: green;
+    background: #2ecc71;
     height: 1px;
     position: absolute;
     bottom: 0;
     width: 0%;
     left: 0;
-    box-shadow: 0 0 40px 6px green;
+    box-shadow: 0 0 40px 6px #2ecc71;
     -webkit-transition: all 400ms linear;
 }
 
@@ -251,9 +251,9 @@ input[type=range]::-webkit-slider-thumb {
     height: 10px;
     width: 3px;
     /*border-radius: 50%;*/
-    background: green;
+    background: #2ecc71;
     margin-top: -3px;
-    box-shadow: 0 0 12px 1px green;
+    box-shadow: 0 0 12px 1px #2ecc71;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
