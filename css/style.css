@@ -60,7 +60,7 @@ body {
 .controls-top {
     height: 50px;
     line-height: 55px;
-    padding: 0 10px;
+    padding: 0px 10px 0 5px;
 }
 
 .add {
@@ -222,6 +222,22 @@ body {
     -webkit-transition: all 400ms linear;
 }
 
+.controls .line {
+    width: 1px;
+    height: 80px;
+    background: #3c4e60;
+    position: absolute;
+    background: rgba(255,255,255,0.05);
+}
+
+.controls .line.left {
+    left: 124px;
+}
+
+.controls .line.right {
+    right: 85px;
+}
+
 .song-progress.top {
     top: 0;
     bottom: auto;
@@ -229,9 +245,9 @@ body {
 
 .selected-title {
     color: #fff;
-    margin-left: 10px;
+    margin-left: 16px;
     text-overflow: ellipsis;
-    width: 230px;
+    width: 246px;
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
@@ -280,9 +296,9 @@ input[type=range] {
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: none;
-    height: 10px;
-    width: 3px;
-    /*border-radius: 50%;*/
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
     background: #2ecc71;
     margin-top: -3px;
     box-shadow: 0 0 12px 1px #2ecc71;
@@ -290,12 +306,12 @@ input[type=range]::-webkit-slider-thumb {
 
 input[type=range]::-webkit-slider-runnable-track {
     height: 4px;
-    background: #fff;
-    border: none;
+    background: #2c3e50;
+    border: 1px solid #3c4e60;
 }
 
 .volume-slider {
-    width: 66px;
+    width: 80px;
     margin-right: 3px;
     margin-top: -1px;
 }
@@ -305,13 +321,13 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .volume {
-    margin-left: 16px;
+    margin-left: 8px;
     display: inline-block;
 }
 
 .location {
     display: inline-block;
-    margin-left: 24px;
+    margin-left: 20px;
 }
 
 .location-slider {
@@ -348,7 +364,7 @@ input[type=range]::-webkit-slider-runnable-track {
     position: absolute;
     top: 10px;
     height: 30px;
-    left: 130px;
+    left: 135px;
     border-radius: 12px;
     border: 0;
     outline: none;
@@ -358,5 +374,5 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .search-bar.visible {
     padding: 10px;
-    width: 250px;
+    width: 245px;
 }
