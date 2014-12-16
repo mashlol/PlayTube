@@ -11,9 +11,10 @@ Currently you can create individual playlists (stored locally) using the chrome 
 ### Usage
 
 * Install the chrome extension (current, that means cloning this repo and adding as a developer extension)
-* Navigate to YouTube videos you want to add to your playlist
-* Click the extension button, and click the add button in the top right to add the song to your playlist
+* Navigate to a YouTube video you want to add to your playlist
+* Click the extension button, and click the "+" button in the top right to add the song to your playlist
 * Use the controls to control your playlist
+* Note you can also add videos with the "+ Save" button on the YouTube page itself (top right of video description)
 
 ### Todo
 
@@ -27,4 +28,5 @@ Currently you can create individual playlists (stored locally) using the chrome 
 ### Screenshot
 
 ![Screenshot](http://i.imgur.com/2AndhGc.png)
+![Screenshot](http://i.imgur.com/3ZRDMlE.png)
 
