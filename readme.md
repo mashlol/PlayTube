@@ -24,8 +24,7 @@ Currently you can create individual playlists (stored locally) using the chrome 
 * Playlist sharing (publicly or to friends)
 
 
-### Screenshots
+### Screenshot
 
-![Screenshot](http://i.imgur.com/ZF6rOYt.png)
-![Screenshot](http://i.imgur.com/jlqQJOy.png)
+![Screenshot](http://i.imgur.com/2AndhGc.png)
 
