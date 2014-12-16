@@ -18,11 +18,11 @@ Currently you can create individual playlists (stored locally) using the chrome 
 
 ### Todo
 
-* Shuffle (Ideally this will build a shuffled version of your playlist and play that - so the same song won't repeat until all other songs have played at least once)
 * Multiple Playlists (Should be a drop-down somewhere to select current playlist)
 * Synced Playlists (Not just stored locally, stored somewhere else)
 * Music discovery (Would be nice to have a database of artists, albums & their songs linked to YouTube vids of each song - probably crowdsourced)
 * Playlist sharing (publicly or to friends)
+* Converting YouTube playlists into PlayTube playlists
 
 
 ### Screenshot
