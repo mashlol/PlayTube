@@ -204,7 +204,9 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #444;
+    background: #2ecc71;
+    box-shadow: 0 0 5px 0px #2ecc71;
+    border-radius: 2px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -323,16 +325,36 @@ input[type=range]::-webkit-slider-runnable-track {
 .volume {
     margin-left: 8px;
     display: inline-block;
+    position: relative;
 }
 
 .location {
     display: inline-block;
     margin-left: 20px;
+    position: relative;
 }
 
 .location-slider {
     width: 180px;
     margin-right: 10px;
+}
+
+.slider-left {
+    height: 2px;
+    background: #2ecc71;
+    width: 0px;
+    position: absolute;
+    pointer-events: none;
+    -webkit-transition: all 250ms ease-in-out;
+}
+
+.location-slider-left {
+    top: 9px;
+}
+
+.volume-slider-left {
+    top: 9px;
+    left: 11px;
 }
 
 .song-remove:hover, .song .play-pause:hover {

@@ -22,6 +22,11 @@ chrome.runtime.onMessage.addListener(
 
       $(".location-slider").val(request.amount);
 
+      var opposite = (100 - request.amount) / 100;
+      $(".location-slider-left").css({
+        width: (request.amount / 100) * 180 + opposite * 7 - 2
+      });
+
       $currentVideoEle.find(".song-curtime").html(request.curTime + " / ");
 
       $(".selected-length").html(request.curTime + " / " +
@@ -159,9 +164,15 @@ $(function() {
   });
 
   $(".controls .volume-slider").on("input", function(event) {
+    var val = $(".controls .volume-slider").val();
     sendMessage({
       action: "updateVolume",
-      volume: $(".controls .volume-slider").val()
+      volume: val,
+    });
+
+    var opposite = (100 - val) / 100;
+    $(".volume-slider-left").css({
+      width: (val / 100) * 80 + opposite * 7 - 2
     });
   });
 
@@ -301,11 +312,15 @@ $(function() {
     });
 
     var top = $currentVideoEle.offset().top;
-    $(".playlist").scrollTop(top - 240);
+    $(".playlist").animate({scrollTop: top - 240});
 
     $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
     $(".controls .volume-slider").val(response.volume);
+    var opposite = (100 - response.volume) / 100;
+    $(".volume-slider-left").css({
+      width: (response.volume / 100) * 80 + opposite * 7 - 2
+    });
 
     if (response.isRepeat) {
       $(".controls .repeat").addClass("active");
