@@ -4,10 +4,6 @@ var sendMessage = function(message, callback) {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (request.action == "songEnded") {
-      nextVideo(true);
-    }
-
     if (request.action == "update") {
       isPlaying = request.isPlaying;
       if (isPlaying) {
@@ -30,6 +26,13 @@ chrome.runtime.onMessage.addListener(
 
       $(".selected-length").html(request.curTime + " / " +
             $currentVideoEle.find(".song-duration").html());
+    }
+
+    if (request.action == "currentVideoUpdate") {
+      var video = request.currentVideo;
+
+      var $videoEle = $(".song[video='" + video + "']");
+      changeSelectedVideo($videoEle, video);
     }
   }
 );
@@ -57,35 +60,17 @@ var changeSelectedVideo = function($videoEle, video) {
   $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
   isPlaying = true;
+
+  var top = currentVideo * 60 + 72.5;
+  $(".playlist").animate({scrollTop: top - 240});
 }
 
-var nextVideo = function(silent) {
-  if (!silent) {
-    sendMessage({action: "next"});
-  }
-
-  var $videoEle = $currentVideoEle.next();
-  if ($videoEle.length == 0) {
-    $videoEle = $(".playlist .song").first();
-  }
-  window.test = $videoEle;
-
-  var video = $videoEle.attr("video");
-
-  changeSelectedVideo($videoEle, video);
+var nextVideo = function() {
+  sendMessage({action: "next"});
 };
 
 var previousVideo = function() {
   sendMessage({action: "previous"});
-
-  var $videoEle = $currentVideoEle.prev();
-  if ($videoEle.length == 0) {
-    $videoEle = $(".playlist .song").last();
-  }
-
-  var video = $videoEle.attr("video");
-
-  changeSelectedVideo($videoEle, video);
 };
 
 var togglePlayPause = function($videoEle) {
@@ -185,6 +170,24 @@ $(function() {
       action: "updateLocation",
       location: $(".controls .location-slider").val()
     });
+  });
+
+  $(".controls .shuffle").on("click", function() {
+    $(".controls .shuffle").toggleClass("active");
+    var isShuffle = $(".controls .shuffle").hasClass("active");
+
+    sendMessage({
+      action: "shuffleToggle",
+      isShuffle: isShuffle,
+    });
+  });
+
+  $(".controls .repeat").on("click", function() {
+    $(".controls .repeat").toggleClass("active");
+
+    var isRepeat = $(".controls .repeat").hasClass("active");
+
+
   });
 
   $(".controls .search").on("click", function() {
@@ -303,5 +306,13 @@ $(function() {
     $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
     $(".controls .volume-slider").val(response.volume);
+
+    if (response.isRepeat) {
+      $(".controls .repeat").addClass("active");
+    }
+
+    if (response.isShuffle) {
+      $(".controls .shuffle").addClass("active");
+    }
   });
 });

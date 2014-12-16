@@ -21,9 +21,12 @@ var getVideoIdFromUrl = function(url) {
 };
 
 var savedVideos;
+var videoOrder = [];
 
 chrome.storage.local.get("videos", function(items) {
   savedVideos = items.videos || [];
+
+  generateNewOrder();
 });
 
 var isVideoAlreadySaved = function(videoId) {
@@ -43,6 +46,8 @@ var saveVideos = function() {
 var currentVideo = 0;
 var isPlaying = false;
 var volume = 50;
+var isShuffle = false;
+var isRepeat = true;
 
 var videoTab = false;
 var oldActiveTabId;
@@ -59,11 +64,12 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
-  if (tabId == videoTab.id && changeInfo.url &&
-        getVideoIdFromUrl(changeInfo.url) != savedVideos[currentVideo].video) {
-    isPlaying = false;
-    sendMessage({action: "update", isPlaying: false});
-  }
+  // TODO possibly add this back
+  // if (tabId == videoTab.id && changeInfo.url &&
+  //       getVideoIdFromUrl(changeInfo.url) != savedVideos[videoOrder[currentVideo]].video) {
+  //   isPlaying = false;
+  //   sendMessage({action: "update", isPlaying: false});
+  // }
 
   if (changeInfo.url && changeInfo.url.indexOf("youtube") != -1) {
     chrome.tabs.getSelected(null, function(tab) {
@@ -104,9 +110,11 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "state") {
       sendResponse({
         videos: savedVideos,
-        currentVideo: currentVideo,
+        currentVideo: videoOrder[currentVideo],
         isPlaying: isPlaying,
         volume: volume,
+        isShuffle: isShuffle,
+        isRepeat: isRepeat,
       });
     }
 
@@ -117,14 +125,33 @@ chrome.runtime.onMessage.addListener(
         duration: request.duration,
       });
 
+      generateNewOrder();
+
       saveVideos();
     }
 
     if (request.action == "remove") {
       savedVideos.splice(request.video, 1);
 
-      if (currentVideo > request.video) {
-        currentVideo--;
+      var toRemove = [];
+
+      for (var x in videoOrder) {
+        var vidId = videoOrder[x];
+
+        // We need to remove anything which references the highest song
+        // since there's one less song now.
+        // Anything we remove that's before our current song, we should also
+        // decrease the current song index so we account for that.
+        if (vidId == savedVideos.length) {
+          toRemove.push(x);
+          if (currentVideo > x) {
+            currentVideo--;
+          }
+        }
+      }
+
+      for (var x in toRemove) {
+        videoOrder.splice(toRemove[x], 1);
       }
 
       saveVideos();
@@ -155,8 +182,50 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "isVideoAlreadySaved") {
       sendResponse(isVideoAlreadySaved(request.videoId));
     }
+
+    if (request.action == "shuffleToggle") {
+      isShuffle = request.isShuffle;
+
+      generateNewOrder();
+    }
   }
 );
+
+var generateNewOrder = function() {
+  saveVideos[videoOrder[currentVideo]];
+
+  if (isShuffle) {
+    // We want to generate a shuffled list FOLLOWING the current song
+    currentVideo;
+
+    var tempList = [];
+    for (var x = 0; x < savedVideos.length; x++) {
+      if (videoOrder[currentVideo] == x) continue;
+
+      tempList.push({
+        number: x,
+        random: Math.random(),
+      });
+    }
+
+    tempList.sort(function(a, b) {
+      return a.random - b.random;
+    });
+
+    videoOrder = videoOrder.splice(0, currentVideo + 1)
+      .concat(tempList.map(function(x) {
+        return x.number;
+    }));
+
+  } else {
+    videoOrder = videoOrder.splice(0, currentVideo + 1);
+
+    for (var x = 0; x < savedVideos.length; x++) {
+      if (videoOrder[currentVideo] == x) continue;
+      videoOrder.push(x);
+    }
+  }
+};
 
 var createVideoTabIfNotExists = function(callback) {
   if (!videoTab) {
@@ -172,19 +241,38 @@ var createVideoTabIfNotExists = function(callback) {
   }
 };
 
-var playVideo = function(video) {
+var playVideo = function(video, relative) {
+  if (relative) {
+    var relativeVideo = video;
+    video = videoOrder[video];
+  } else {
+    var relativeVideo = 0;
+    for (var x in videoOrder) {
+      if (videoOrder[x] == video) {
+        relativeVideo = x;
+        break;
+      }
+    }
+  }
+
   createVideoTabIfNotExists(function(tab) {
     if (tab.url.indexOf(savedVideos[video].video) != -1) {
       chrome.tabs.sendMessage(tab.id, {action: "clickVideo"});
     } else {
       chrome.tabs.update(tab.id, {
-        url: "https://www.youtube.com/watch?v=" + savedVideos[video].video,
+        url: "https://www.youtube.com/watch?v=" +
+                savedVideos[video].video,
         pinned: true
       });
     }
 
-    currentVideo = parseInt(video);
+    currentVideo = parseInt(relativeVideo);
     isPlaying = true;
+
+    sendMessage({
+      action: "currentVideoUpdate",
+      currentVideo: video,
+    });
   });
 };
 
@@ -199,17 +287,18 @@ var pauseVideo = function() {
 };
 
 var nextVideo = function() {
-  if (currentVideo == savedVideos.length - 1) {
-    playVideo(0);
-  } else {
-    playVideo(currentVideo + 1);
+  if (currentVideo == videoOrder.length - 1) {
+    // If we're shuffling we need to create a new order of shuffled songs
+    // If we're not shuffling, this won't really do anything
+    generateNewOrder();
   }
+  playVideo(currentVideo + 1 % videoOrder.length, true);
 };
 
 var previousVideo = function() {
   if (currentVideo == 0) {
-    playVideo(savedVideos.length - 1);
+    playVideo(videoOrder.length - 1, true);
   } else {
-    playVideo(currentVideo - 1);
+    playVideo(currentVideo - 1, true);
   }
 };
