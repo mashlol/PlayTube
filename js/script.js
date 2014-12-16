@@ -47,6 +47,12 @@ var $currentVideoEle;
 var isPlaying = false;
 
 var changeSelectedVideo = function($videoEle, video) {
+  isPlaying = true;
+
+  if (currentVideo == video) {
+    return;
+  }
+
   if ($currentVideoEle) {
     $currentVideoEle.find(".play-pause").html("<i class='fa fa-play'></i>");
     $currentVideoEle.removeClass("selected");
@@ -64,11 +70,9 @@ var changeSelectedVideo = function($videoEle, video) {
 
   $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
-  isPlaying = true;
-
   var top = currentVideo * 60 + 72.5;
   $(".playlist").animate({scrollTop: top - 240});
-}
+};
 
 var nextVideo = function() {
   sendMessage({action: "next"});
@@ -203,6 +207,13 @@ $(function() {
 
   $(".controls .search").on("click", function() {
     $(".search-bar").toggleClass("visible");
+
+    if (!$(".search-bar").hasClass("visible")) {
+      $(".search-bar").val('');
+      $(".playlist .song").each(function() {
+        $(this).show();
+      });
+    }
   });
 
   $(".search-bar").on("input", function() {
