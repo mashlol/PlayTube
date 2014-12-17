@@ -14,7 +14,7 @@
   ],
 
   "background": {
-    "scripts": ["bg.js"]
+    "scripts": ["parse.min.js", "bg.js"]
   },
 
   "browser_action": {

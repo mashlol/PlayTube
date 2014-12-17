@@ -1,3 +1,9 @@
+Parse.initialize("3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC", "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf");
+
+var User = Parse.User;
+var Song = Parse.Object.extend("Song");
+
+
 var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
@@ -20,13 +26,115 @@ var getVideoIdFromUrl = function(url) {
   return video;
 };
 
-var savedVideos;
+var savedVideos = [];
 var videoOrder = [];
+var playTubeUser;
 
-chrome.storage.local.get("videos", function(items) {
-  savedVideos = items.videos || [];
+var generateRandomString = function(length) {
+  var str = "";
+  for (var x=0; x<length; x++) {
+    str += String.fromCharCode(Math.floor(Math.random() * 92 + 33));
+  }
 
-  generateNewOrder();
+  return str;
+};
+
+var generateRandomAlphaString = function(length) {
+  var str = "";
+  for (var x=0; x<length; x++) {
+    str += String.fromCharCode(Math.floor(Math.random() * 25 + 97));
+  }
+
+  return str;
+}
+
+
+var saveOldStyleVideos = function() {
+  chrome.storage.local.get("videos", function(items) {
+    if (items.videos) {
+      var objects = [];
+      for (var x in items.videos) {
+        var song = items.videos[x];
+
+        var songObj = new Song();
+        songObj.set("videoId", song.video);
+        songObj.set("name", song.title);
+        songObj.set("duration", song.duration);
+        songObj.set("user", playTubeUser);
+        songObj.setACL(new Parse.ACL(playTubeUser));
+        objects.push(songObj);
+
+        savedVideos.push(song);
+      }
+
+      generateNewOrder();
+
+      Parse.Object.saveAll(objects);
+
+      chrome.storage.local.remove("videos");
+    }
+  });
+}
+
+// Try to login
+chrome.storage.sync.get("user", function(items) {
+  // If we can login, we'll fetch our data from Parse
+  if (items.user && items.user.username && items.user.password) {
+    // TODO fetch from parse
+    // var query = new Parse.Query(User);
+    User.logIn(items.user.username, items.user.password).then(function(user) {
+      playTubeUser = user;
+
+      // Query for all songs owned by this user
+      var songQuery = new Parse.Query(Song);
+      songQuery.equalTo("user", user);
+      return songQuery.find();
+    }, function(error) {
+      console.log("Error", arguments);
+    }).then(function(songs) {
+      for (var x in songs) {
+        var song = songs[x];
+
+        savedVideos.push({
+          title: song.get("name"),
+          video: song.get("videoId"),
+          duration: song.get("duration"),
+          id: song.id,
+        });
+      }
+
+      generateNewOrder();
+    }, function() {
+      console.log("Error", arguments);
+    });
+  } else {
+    // Otherwise, we need to make a new user and save it
+    var username = generateRandomString(20);
+    var password = generateRandomString(20);
+
+    var user = new User();
+    user.set("username", username);
+    user.set("password", password);
+    user.set(
+      "email",
+      generateRandomAlphaString(4) + "@" + generateRandomAlphaString(4) + ".com"
+    );
+    user.signUp().then(function(user) {
+      playTubeUser = user;
+
+      chrome.storage.sync.set({
+        user: {
+          username: username,
+          password: password
+        }
+      });
+
+      // Check if we had the old style of videos saved locally
+      saveOldStyleVideos();
+    }, function() {
+      console.log("Error", arguments);
+    });
+  }
 });
 
 var isVideoAlreadySaved = function(videoId) {
@@ -37,10 +145,6 @@ var isVideoAlreadySaved = function(videoId) {
   }
 
   return false;
-};
-
-var saveVideos = function() {
-  chrome.storage.local.set({videos: savedVideos});
 };
 
 var currentVideo = 0;
@@ -87,6 +191,30 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
   }
 });
 
+var addSong = function(song) {
+  savedVideos.push(song);
+
+  generateNewOrder();
+
+  // Save to parse
+  var songObj = new Song();
+  songObj.set("videoId", song.video);
+  songObj.set("name", song.title);
+  songObj.set("duration", song.duration);
+  songObj.set("user", playTubeUser);
+  songObj.setACL(new Parse.ACL(playTubeUser));
+  songObj.save();
+};
+
+var removeSong = function(song) {
+  var query = new Parse.Query(Song);
+  query.get(song.id).then(function(song) {
+    song.destroy();
+  }, function() {
+    console.log("Error", arguments);
+  });
+};
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log(request);
@@ -119,19 +247,15 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "add") {
-      savedVideos.push({
+      addSong({
         video: request.video,
         title: request.title,
         duration: request.duration,
       });
-
-      generateNewOrder();
-
-      saveVideos();
     }
 
     if (request.action == "remove") {
-      savedVideos.splice(request.video, 1);
+      var removedSong = savedVideos.splice(request.video, 1)[0];
 
       var toRemove = [];
 
@@ -154,7 +278,7 @@ chrome.runtime.onMessage.addListener(
         videoOrder.splice(toRemove[x], 1);
       }
 
-      saveVideos();
+      removeSong(removedSong);
     }
 
     if (request.action == "isPlayTab") {
@@ -192,8 +316,6 @@ chrome.runtime.onMessage.addListener(
 );
 
 var generateNewOrder = function() {
-  saveVideos[videoOrder[currentVideo]];
-
   if (isShuffle) {
     // We want to generate a shuffled list FOLLOWING the current song
     currentVideo;
