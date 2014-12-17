@@ -116,8 +116,9 @@ var addVideoEle = function(video, index) {
 
   $newSong.find(".background").css({
     "background": "url(https://i.ytimg.com/vi/" + video.video + "/default.jpg)",
-    "background-position-y": "-100px",
-    "background-size": "100%",
+    "background-size": "120%",
+    "background-position-y": "50%",
+    "background-position-x": "50%",
   });
 
   $newSong.attr("video", index);
