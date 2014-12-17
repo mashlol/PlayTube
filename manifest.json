@@ -4,7 +4,7 @@
 
   "name": "PlayTube",
   "description": "Use YouTube for song streaming",
-  "version": "0.6",
+  "version": "0.7",
 
   "icons": {
     "128": "icon.png"
@@ -12,7 +12,7 @@
 
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["*://*.youtube.com/*"],
       "js": ["./js/contentScript.js"]
     }
   ],
@@ -26,8 +26,6 @@
     "default_popup": "index.html"
   },
   "permissions": [
-    "http://*/*",
-    "https://*/*",
     "tabs",
     "storage"
   ]
