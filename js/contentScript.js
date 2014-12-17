@@ -42,10 +42,12 @@ setInterval(looper, 400);
 var isPlayTab = false;
 var volume = 0;
 
+var playButton;
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.action == "clickVideo") {
-      document.getElementsByClassName("html5-video-container")[0].click();
+      playButton.click();
     }
 
     if (request.action == "getVideoInfo") {
@@ -86,6 +88,7 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
   if (isPlayTab) {
     document.getElementsByClassName("video-stream")[0].volume =
           response.volume / 100;
+    playButton = document.getElementsByClassName("ytp-button-pause")[0];
   }
 });
 

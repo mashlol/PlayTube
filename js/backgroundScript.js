@@ -373,7 +373,7 @@ var createVideoTabIfNotExists = function(callback) {
   }
 };
 
-var playVideo = function(video, relative) {
+var playVideo = function(video, relative, restart) {
   if (relative) {
     var relativeVideo = video;
     video = videoOrder[video];
@@ -388,7 +388,7 @@ var playVideo = function(video, relative) {
   }
 
   createVideoTabIfNotExists(function(tab) {
-    if (tab.url.indexOf(savedVideos[video].video) != -1) {
+    if (tab.url.indexOf(savedVideos[video].video) != -1 && !restart) {
       chrome.tabs.sendMessage(tab.id, {action: "clickVideo"});
     } else {
       chrome.tabs.update(tab.id, {
@@ -424,13 +424,13 @@ var nextVideo = function() {
     // If we're not shuffling, this won't really do anything
     generateNewOrder();
   }
-  playVideo(currentVideo + 1 % videoOrder.length, true);
+  playVideo(currentVideo + 1 % videoOrder.length, true, true);
 };
 
 var previousVideo = function() {
   if (currentVideo == 0) {
-    playVideo(videoOrder.length - 1, true);
+    playVideo(videoOrder.length - 1, true, true);
   } else {
-    playVideo(currentVideo - 1, true);
+    playVideo(currentVideo - 1, true, true);
   }
 };
