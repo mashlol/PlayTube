@@ -3,9 +3,12 @@
 PlayTube is a chrome extension with an end goal of being the best music streaming service around.  This will include publicly shared playlists, music discovery, unlimited individual playlists & unlimited songs per playlist.  Best of all, it will be entirely free.  Think Spotify with YouTube videos.
 
 
-### Current Progress
+### Current Features
 
-Currently you can create individual playlists (stored locally) using the chrome extension.  You can control everything you might do normally on YouTube or spotify from within the extension (volume controls, song scrubber, unlimited skips, no ads (just YouTube ads)).
+* Simple button embedded on YouTube video pages to add songs to your playlist
+* Synced playlist across any chrome browser logged into your google account
+* Beautiful UI for organizing your favorite songs and playing them
+* Shuffle
 
 
 ### Usage
@@ -18,10 +21,10 @@ Currently you can create individual playlists (stored locally) using the chrome 
 
 [1]: https://chrome.google.com/webstore/detail/playtube/mgcacknkafhdpbnfiokajkfcaldpdnbl
 
+
 ### Todo
 
 * Multiple Playlists (Should be a drop-down somewhere to select current playlist)
-* Synced Playlists (Not just stored locally, stored somewhere else)
 * Music discovery (Would be nice to have a database of artists, albums & their songs linked to YouTube vids of each song - probably crowdsourced)
 * Playlist sharing (publicly or to friends)
 * Converting YouTube playlists into PlayTube playlists
