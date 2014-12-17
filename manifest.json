@@ -9,12 +9,12 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["cs.js"]
+      "js": ["./js/contentScript.js"]
     }
   ],
 
   "background": {
-    "scripts": ["parse.min.js", "bg.js"]
+    "scripts": ["./js/lib/parse.min.js", "./js/backgroundScript.js"]
   },
 
   "browser_action": {
