@@ -17,6 +17,14 @@ body {
     display: none;
 }
 
+.help {
+    padding: 20px;
+}
+
+ol {
+    margin-left: 20px;
+}
+
 .controls {
     height: 80px;
     background: #34495e;

@@ -131,6 +131,8 @@ var addVideoEle = function(video, index) {
   $newSong.attr("videoId", video.video);
 
   $(".playlist").append($newSong);
+
+  noVideoCheck();
 };
 
 var isVideoAlreadySaved = function(videoId) {
@@ -159,6 +161,18 @@ var getVideoIdFromUrl = function(url) {
   }
 
   return video;
+};
+
+var noVideoCheck = function() {
+  var noVideos = $(".playlist .song").length == 0;
+
+  if (!noVideos) {
+    $(".help").hide();
+  } else {
+    $(".help").show();
+  }
+
+  return noVideos;
 };
 
 $(function() {
@@ -302,6 +316,8 @@ $(function() {
     });
 
     sendMessage({action: "remove", video: video});
+
+    noVideoCheck();
   });
 
   $("body").on("click", ".song .play-pause", function(event) {
@@ -319,15 +335,6 @@ $(function() {
     }
 
     isPlaying = response.isPlaying;
-    currentVideo = response.currentVideo;
-    $currentVideoEle = $(".song[video='" + currentVideo + "']");
-
-    if (isPlaying) {
-      $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
-      $currentVideoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
-    }
-
-    $currentVideoEle.addClass("selected");
 
     chrome.tabs.getSelected(null, function(tab) {
       var video = getVideoIdFromUrl(tab.url);
@@ -340,11 +347,6 @@ $(function() {
         $(".add").html("<i class='fa fa-check'></i>");
       }
     });
-
-    var top = $currentVideoEle.offset().top;
-    $(".playlist").animate({scrollTop: top - 240});
-
-    $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
     $(".controls .volume-slider").val(response.volume);
     var opposite = (100 - response.volume) / 100;
@@ -359,5 +361,24 @@ $(function() {
     if (response.isShuffle) {
       $(".controls .shuffle").addClass("active");
     }
+
+    if (noVideoCheck()) {
+      return;
+    }
+
+    currentVideo = response.currentVideo;
+    $currentVideoEle = $(".song[video='" + currentVideo + "']");
+
+    if (isPlaying) {
+      $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
+      $currentVideoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
+    }
+
+    $currentVideoEle.addClass("selected");
+
+    var top = $currentVideoEle.offset().top;
+    $(".playlist").animate({scrollTop: top - 240});
+
+    $(".selected-title").html($currentVideoEle.find(".song-title").html());
   });
 });
