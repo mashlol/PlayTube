@@ -1,3 +1,9 @@
+Parse.initialize("3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC", "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf");
+
+var track = function(event, dimensions) {
+  Parse.Analytics.track(event, dimensions);
+};
+
 var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
@@ -158,14 +164,18 @@ var getVideoIdFromUrl = function(url) {
 $(function() {
   $(".controls .play-pause").on("click", function(event) {
     togglePlayPause($(this));
+    track("playPause");
   });
 
   $(".controls .next").on("click", function(event) {
     nextVideo();
+    track("nextVideo");
   });
 
   $(".controls .previous").on("click", function(event) {
     previousVideo();
+
+    track("previousVideo");
   });
 
   $(".controls .volume-slider").on("input", function(event) {
@@ -196,6 +206,8 @@ $(function() {
       action: "shuffleToggle",
       isShuffle: isShuffle,
     });
+
+    track("shuffleToggle", {isShuffle: "" + isShuffle});
   });
 
   $(".controls .repeat").on("click", function() {
@@ -203,7 +215,7 @@ $(function() {
 
     var isRepeat = $(".controls .repeat").hasClass("active");
 
-
+    track("repeatToggle", {isRepeat: "" + isRepeat});
   });
 
   $(".controls .search").on("click", function() {
@@ -215,6 +227,10 @@ $(function() {
         $(this).show();
       });
     }
+
+    track("searchToggle", {
+      visible: "" + $(".search-bar").hasClass("visible")
+    });
   });
 
   $(".search-bar").on("input", function() {
@@ -290,6 +306,8 @@ $(function() {
 
   $("body").on("click", ".song .play-pause", function(event) {
     togglePlayPause($(this).parent(".song"));
+
+    track("playPauseSpecific");
   });
 
   // Get what the current state is

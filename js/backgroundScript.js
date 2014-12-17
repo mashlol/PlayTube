@@ -4,6 +4,10 @@ var User = Parse.User;
 var Song = Parse.Object.extend("Song");
 
 
+var track = function(event, dimensions) {
+  Parse.Analytics.track(event, dimensions);
+};
+
 var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
@@ -46,8 +50,7 @@ var generateRandomAlphaString = function(length) {
   }
 
   return str;
-}
-
+};
 
 var saveOldStyleVideos = function() {
   chrome.storage.local.get("videos", function(items) {
@@ -204,6 +207,8 @@ var addSong = function(song) {
   songObj.set("user", playTubeUser);
   songObj.setACL(new Parse.ACL(playTubeUser));
   songObj.save();
+
+  track("songAdd");
 };
 
 var removeSong = function(song) {
@@ -213,6 +218,8 @@ var removeSong = function(song) {
   }, function() {
     console.log("Error", arguments);
   });
+
+  track("songRemove");
 };
 
 chrome.runtime.onMessage.addListener(
@@ -244,6 +251,7 @@ chrome.runtime.onMessage.addListener(
         isShuffle: isShuffle,
         isRepeat: isRepeat,
       });
+      track("browserActionClick");
     }
 
     if (request.action == "add") {
@@ -301,6 +309,8 @@ chrome.runtime.onMessage.addListener(
         action: "updateLocation",
         location: request.location
       });
+
+      track("locationUpdate");
     }
 
     if (request.action == "isVideoAlreadySaved") {
