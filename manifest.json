@@ -4,7 +4,7 @@
 
   "name": "PlayTube",
   "description": "Use YouTube for song streaming",
-  "version": "0.4",
+  "version": "0.5",
 
   "content_scripts": [
     {
