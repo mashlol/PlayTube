@@ -12,13 +12,34 @@
 
   "content_scripts": [
     {
-      "matches": ["*://*/*"],
+      "matches": ["*://*.youtube.com/*"],
       "js": ["./js/contentScript.js"]
     }
   ],
 
   "background": {
     "scripts": ["./js/lib/parse.min.js", "./js/backgroundScript.js"]
+  },
+
+  "commands": {
+    "mediaNextSong": {
+      "suggested_key": {
+        "default": "MediaNextTrack"
+      },
+      "description": "Skip to next song"
+    },
+    "mediaPreviousSong": {
+      "suggested_key": {
+        "default": "MediaPrevTrack"
+      },
+      "description": "Skip to previous song"
+    },
+    "mediaPlayPause": {
+      "suggested_key": {
+        "default": "MediaPlayPause"
+      },
+      "description": "Play / pause current song"
+    }
   },
 
   "browser_action": {

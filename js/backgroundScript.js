@@ -245,14 +245,6 @@ chrome.runtime.onMessage.addListener(
       pauseVideo();
     }
 
-    if (request.action == "playPauseHotkey") {
-      if (!isPlaying) {
-        playVideo(currentVideo, true);
-      } else {
-        pauseVideo();
-      }
-    }
-
     if (request.action == "next" || request.action == "songEnded") {
       nextVideo();
     }
@@ -461,3 +453,22 @@ var previousVideo = function() {
     playVideo(currentVideo - 1, true, true);
   }
 };
+
+
+chrome.commands.onCommand.addListener(function(command) {
+  if (command == "mediaNextSong") {
+    nextVideo();
+  }
+
+  if (command == "mediaPreviousSong") {
+    previousVideo();
+  }
+
+  if (command == "mediaPlayPause") {
+    if (!isPlaying) {
+      playVideo(currentVideo, true);
+    } else {
+      pauseVideo();
+    }
+  }
+});
