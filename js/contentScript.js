@@ -152,3 +152,17 @@ var addSaveButton = function() {
 };
 
 addSaveButton();
+
+window.onkeyup = function(event) {
+  if (event.keyIdentifier == "MediaPlayPause") {
+    chrome.runtime.sendMessage({action: "playPauseHotkey"});
+  }
+
+  if (event.keyIdentifier == "MediaNextTrack") {
+    chrome.runtime.sendMessage({action: "next"});
+  }
+
+  if (event.keyIdentifier == "MediaPreviousTrack") {
+    chrome.runtime.sendMessage({action: "previous"});
+  }
+};

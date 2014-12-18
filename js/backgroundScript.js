@@ -245,6 +245,14 @@ chrome.runtime.onMessage.addListener(
       pauseVideo();
     }
 
+    if (request.action == "playPauseHotkey") {
+      if (!isPlaying) {
+        playVideo(currentVideo, true);
+      } else {
+        pauseVideo();
+      }
+    }
+
     if (request.action == "next" || request.action == "songEnded") {
       nextVideo();
     }
