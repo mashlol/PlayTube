@@ -83,14 +83,17 @@ var saveOldStyleVideos = function() {
 chrome.storage.sync.get("user", function(items) {
   // If we can login, we'll fetch our data from Parse
   if (items.user && items.user.username && items.user.password) {
-    // TODO fetch from parse
-    // var query = new Parse.Query(User);
     User.logIn(items.user.username, items.user.password).then(function(user) {
       playTubeUser = user;
 
       // Query for all songs owned by this user
       var songQuery = new Parse.Query(Song);
       songQuery.equalTo("user", user);
+
+      // Current max limit allowed by Parse is 1000
+      // Probably need a better solution for over 1000 songs anyways
+      songQuery.limit(1000);
+
       return songQuery.find();
     }, function(error) {
       console.log("Error", arguments);
