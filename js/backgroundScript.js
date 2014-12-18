@@ -107,7 +107,6 @@ chrome.storage.sync.get("user", function(items) {
       getAllSongs(0, [], function(songs) {
         for (var x in songs) {
           var song = songs[x];
-          console.log(song);
 
           savedVideos.push({
             title: song.get("name"),
@@ -117,7 +116,7 @@ chrome.storage.sync.get("user", function(items) {
           });
         }
 
-        generateNewOrder();
+        generateNewOrder(true);
       });
     }, function(error) {
       console.log("Error", arguments);
@@ -337,7 +336,15 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-var generateNewOrder = function() {
+var generateNewOrder = function(initial) {
+  if (initial) {
+    for (var x = 0; x < savedVideos.length; x++) {
+      videoOrder.push(x);
+    }
+
+    return;
+  }
+
   if (isShuffle) {
     // We want to generate a shuffled list FOLLOWING the current song
     var tempList = [];
@@ -362,7 +369,7 @@ var generateNewOrder = function() {
   } else {
     videoOrder = videoOrder.splice(0, currentVideo + 1);
 
-    var actualCurrentVideo = videoOrder[currentVideo];
+    var actualCurrentVideo = videoOrder[currentVideo] || 0;
 
     for (var x = 0; x < savedVideos.length; x++) {
       if (actualCurrentVideo == x) continue;
