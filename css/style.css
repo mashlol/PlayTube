@@ -42,7 +42,6 @@ ol {
     height: 60px;
     padding: 7px;
     color: white;
-    /*box-shadow: 0 0 8px -2px black inset;*/
     cursor: pointer;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
