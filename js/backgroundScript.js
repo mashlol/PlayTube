@@ -340,8 +340,6 @@ chrome.runtime.onMessage.addListener(
 var generateNewOrder = function() {
   if (isShuffle) {
     // We want to generate a shuffled list FOLLOWING the current song
-    currentVideo;
-
     var tempList = [];
     for (var x = 0; x < savedVideos.length; x++) {
       if (videoOrder[currentVideo] == x) continue;
@@ -364,9 +362,11 @@ var generateNewOrder = function() {
   } else {
     videoOrder = videoOrder.splice(0, currentVideo + 1);
 
+    var actualCurrentVideo = videoOrder[currentVideo];
+
     for (var x = 0; x < savedVideos.length; x++) {
-      if (videoOrder[currentVideo] == x) continue;
-      videoOrder.push(x);
+      if (actualCurrentVideo == x) continue;
+      videoOrder.push(x + actualCurrentVideo + 1 % savedVideos.length);
     }
   }
 };
