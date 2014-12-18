@@ -4,7 +4,7 @@
 
   "name": "PlayTube",
   "description": "Use YouTube for song streaming",
-  "version": "0.8",
+  "version": "0.9",
 
   "icons": {
     "128": "icon.png"
