@@ -77,7 +77,25 @@ var saveOldStyleVideos = function() {
       chrome.storage.local.remove("videos");
     }
   });
-}
+};
+
+var getAllSongs = function(offset, allSongs, callback) {
+  var songQuery = new Parse.Query(Song);
+  songQuery.equalTo("user", playTubeUser);
+  songQuery.skip(offset).limit(1000);
+  songQuery.find().then(function(songs) {
+    allSongs = allSongs.concat(songs);
+
+    if (songs.length < 1000) {
+      callback(allSongs);
+      return;
+    }
+
+    getAllSongs(offset + 1000, allSongs, callback);
+  }, function() {
+    console.log("Error", arguments);
+  });
+};
 
 // Try to login
 chrome.storage.sync.get("user", function(items) {
@@ -86,31 +104,22 @@ chrome.storage.sync.get("user", function(items) {
     User.logIn(items.user.username, items.user.password).then(function(user) {
       playTubeUser = user;
 
-      // Query for all songs owned by this user
-      var songQuery = new Parse.Query(Song);
-      songQuery.equalTo("user", user);
+      getAllSongs(0, [], function(songs) {
+        for (var x in songs) {
+          var song = songs[x];
+          console.log(song);
 
-      // Current max limit allowed by Parse is 1000
-      // Probably need a better solution for over 1000 songs anyways
-      songQuery.limit(1000);
+          savedVideos.push({
+            title: song.get("name"),
+            video: song.get("videoId"),
+            duration: song.get("duration"),
+            id: song.id,
+          });
+        }
 
-      return songQuery.find();
+        generateNewOrder();
+      });
     }, function(error) {
-      console.log("Error", arguments);
-    }).then(function(songs) {
-      for (var x in songs) {
-        var song = songs[x];
-
-        savedVideos.push({
-          title: song.get("name"),
-          video: song.get("videoId"),
-          duration: song.get("duration"),
-          id: song.id,
-        });
-      }
-
-      generateNewOrder();
-    }, function() {
       console.log("Error", arguments);
     });
   } else {
