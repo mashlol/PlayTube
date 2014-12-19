@@ -724,3 +724,8 @@ input[type=range]::-webkit-slider-runnable-track {
 .nav-button[opens="browse"] .nav-title {
     margin-top: -6px;
 }
+
+.playlist-list-footer {
+    font-size: 12px;
+    text-align: center;
+}

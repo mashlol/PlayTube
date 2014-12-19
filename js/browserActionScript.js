@@ -105,7 +105,8 @@ chrome.runtime.onMessage.addListener(
       for (var x in request.playlists) {
         var playlist = request.playlists[x];
 
-        $(".section.browse .playlist-list").append(createPlaylistEle(playlist));
+        $(".section.browse .playlist-list .playlist-list-footer")
+            .before(createPlaylistEle(playlist));
       }
     }
   }
