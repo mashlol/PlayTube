@@ -526,7 +526,9 @@ chrome.runtime.onMessage.addListener(
 
         return relation.query().limit(1).find();
       }).then(function(songs) {
-        playlist.set("backgroundVideoId", songs[0].get("videoId"));
+        if (songs.length > 0) {
+          playlist.set("backgroundVideoId", songs[0].get("videoId"));
+        }
 
         return playlist.save();
       }).then(function() {

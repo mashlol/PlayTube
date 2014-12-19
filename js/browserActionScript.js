@@ -41,6 +41,9 @@ chrome.runtime.onMessage.addListener(
       $(".section.playlists .playlist").show();
       $(".section.playlists .playlist-header").show();
 
+
+      $(".spinner").remove();
+
       if (!request.background) return;
 
       var $playlistButton =
@@ -56,7 +59,6 @@ chrome.runtime.onMessage.addListener(
         "background-position": "50% 50%",
       });
 
-      $(".spinner").remove();
     }
 
     if (request.action == "updateSongProgress") {
@@ -494,7 +496,6 @@ $(function() {
     $(".section.playlists .playlist-header").hide();
   });
 
-  var editing = false;
   $(".playlist-edit").on("click", function() {
     $(".playlist-edit").toggleClass("active");
 
@@ -534,6 +535,7 @@ $(function() {
         action: "editModeLeave",
         playlist: $(this).parents(".playlist-full").attr("playlist"),
       });
+      createSpinner();
     }
   });
 
