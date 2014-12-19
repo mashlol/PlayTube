@@ -627,7 +627,7 @@ chrome.runtime.onMessage.addListener(
       var query = new Parse.Query(Playlist);
       query.equalTo("public", true);
       query.notEqualTo("user", playTubeUser);
-      query.ascending("num_plays");
+      query.descending("num_plays");
       query.find().then(function(plists) {
         for (var x in plists) {
           var plist = plists[x];
