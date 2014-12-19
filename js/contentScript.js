@@ -61,14 +61,16 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "updateVolume") {
       volume = request.volume;
       if (isPlayTab) {
-        document.getElementsByClassName("video-stream")[0].volume = volume / 100;
+        document.getElementsByClassName("video-stream")[0].volume =
+            volume / 100;
       }
     }
 
     if (request.action == "updateLocation") {
       if (isPlayTab) {
         var location = request.location;
-        var duration = document.getElementsByClassName("video-stream")[0].duration;
+        var duration =
+            document.getElementsByClassName("video-stream")[0].duration;
 
         document.getElementsByClassName("video-stream")[0].currentTime =
             duration * (location / 100);
