@@ -567,7 +567,7 @@ input[type=range]::-webkit-slider-runnable-track {
 .playlist-header {
     height: 30px;
     line-height: 30px;
-    background: #111;
+    background: #24394e;
     color: #eee;
 }
 
@@ -634,7 +634,7 @@ input[type=range]::-webkit-slider-runnable-track {
 .playlist-button-options {
     font-size: 12px;
     position: absolute;
-    width: 100px;
+    width: 120px;
     background: rgba(0,0,0,0.7);
     top: 30px;
     right: 5px;
@@ -651,11 +651,21 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-button-options > div:hover {
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.6);
 }
 
 .playlist-button-options i {
-    margin-right: 10px;
+    margin-right: 6px;
+}
+
+.playlist-button.public .playlist-make-private,
+.playlist-button .playlist-make-public {
+    display: block;
+}
+
+.playlist-button.public .playlist-make-public,
+.playlist-button .playlist-make-private {
+    display: none;
 }
 
 .playlist-remove {

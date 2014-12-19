@@ -86,6 +86,12 @@ chrome.runtime.onMessage.addListener(
           getCurrentPlaylistEle().find(".song[video='" + video + "']");
       changeSelectedVideo($videoEle, video, currentPlaylist);
     }
+
+    if (request.action == "addPlaylistEle") {
+      addPlaylistEle(request.playlist);
+
+      $(".spinner").remove();
+    }
   }
 );
 
@@ -195,9 +201,8 @@ var addVideoEle = function(video, index, $playlistEle) {
   $newSong.attr("video", index);
   $newSong.attr("videoId", video.video);
 
-  var playlist =
-      parseInt($playlistEle.parents(".playlist-full").attr("playlist"));
-  if (currentVideo == index && currentPlaylist === playlist) {
+  var playlist = $playlistEle.parents(".playlist-full").attr("playlist");
+  if (currentVideo == index && currentPlaylist == playlist) {
     $currentVideoEle = $newSong;
 
     $newSong.addClass("selected");
@@ -217,7 +222,11 @@ var addVideoEle = function(video, index, $playlistEle) {
 var addPlaylistEle = function(playlist, id) {
   var $playlistBtnEle = $("#templates .playlist-button").clone();
   $playlistBtnEle.find(".playlist-button-title").text(playlist.name);
-  $playlistBtnEle.attr("playlist", id);
+  $playlistBtnEle.attr("playlist", playlist.id);
+
+  if (playlist.public) {
+    $playlistBtnEle.addClass("public");
+  }
 
   if (playlist.background) {
     $playlistBtnEle.find(".playlist-button-background").css({
@@ -419,7 +428,7 @@ $(function() {
 
     $(".song").each(function() {
       if ($(this).attr("video") > video) {
-        $(this).attr("video", $(this).attr("video") - 1)
+        $(this).attr("video", $(this).attr("video") - 1);
       }
     });
 
@@ -457,16 +466,13 @@ $(function() {
     $(".new-playlist-name").hide();
 
     return name;
-  }
+  };
 
   var addPlaylist = function() {
     var name = getPlaylistNameAndClear();
 
-    addPlaylistEle({
-      name: name,
-    }, $(".playlist-list .playlist-button").length - 1);
-
     sendMessage({action: "addPlaylist", name: name});
+    createSpinner();
   };
 
   $(".new-playlist-name").on("blur", getPlaylistNameAndClear);
@@ -563,6 +569,7 @@ $(function() {
   });
 
   $("body").on("click", ".playlist-button-options-toggle", function(event) {
+    $(".playlist-button-options").removeClass("visible");
     $(this).next(".playlist-button-options").toggleClass("visible");
 
     event.stopPropagation();
@@ -624,6 +631,34 @@ $(function() {
     event.stopPropagation();
   });
 
+  $("body").on("click", ".playlist-make-public", function(event) {
+    var $playlistBtnEle = $(this).parents(".playlist-button");
+
+    sendMessage({
+      action: "playlistChangePublic",
+      playlist: $playlistBtnEle.attr("playlist"),
+      public: true,
+    });
+
+    $playlistBtnEle.addClass("public");
+
+    event.stopPropagation();
+  });
+
+  $("body").on("click", ".playlist-make-private", function(event) {
+    var $playlistBtnEle = $(this).parents(".playlist-button");
+
+    sendMessage({
+      action: "playlistChangePublic",
+      playlist: $playlistBtnEle.attr("playlist"),
+      public: false,
+    });
+
+    $playlistBtnEle.removeClass("public");
+
+    event.stopPropagation();
+  });
+
   $("body").on("click", function() {
     $(".playlist-button-options").removeClass("visible");
   });
@@ -633,7 +668,7 @@ $(function() {
     for (var x in response.playlists) {
       var playlist = response.playlists[x];
 
-      addPlaylistEle(playlist, x);
+      addPlaylistEle(playlist);
     }
 
     for (var x in response.videos) {

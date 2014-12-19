@@ -25,6 +25,7 @@ var Playlist = Parse.Object.extend("Playlist", {
       id: this.id,
       name: this.get("name"),
       background: this.get("backgroundVideoId"),
+      public: this.get("public") || false,
     }
   }
 });
@@ -47,7 +48,7 @@ var savedVideos = [];
 var videoOrder = [];
 var playTubeUser;
 
-var playlists = [];
+var playlists = {};
 
 
 // -----------------------------------------------------------------------------
@@ -258,10 +259,7 @@ var createVideoTabIfNotExists = function(callback) {
 
 var playVideo = function(video, playlist, relative, restart) {
   if (playlist !== currentPlaylist) {
-    currentPlaylist = parseInt(playlist);
-    if (isNaN(currentPlaylist)) {
-      currentPlaylist = false;
-    }
+    currentPlaylist = playlist;
     generateNewOrder(true);
   }
 
@@ -358,7 +356,11 @@ chrome.storage.sync.get("user", function(items) {
       query.equalTo("user", user);
       query.limit(1000);
       query.find().then(function(plists) {
-        playlists = plists;
+        for (var x in plists) {
+          var plist = plists[x];
+
+          playlists[plist.id] = plist;
+        }
       }, function() {
         console.log("Error", arguments);
       });
@@ -489,9 +491,12 @@ chrome.runtime.onMessage.addListener(
       playlist.set("user", playTubeUser);
       playlist.setACL(new Parse.ACL(playTubeUser));
       playlist.save().then(function(playlist) {
-        playlists.push(playlist);
+        playlists[playlist.id] = playlist;
 
-        sendResponse(playlist.id);
+        sendMessage({
+          action: "addPlaylistEle",
+          playlist: playlist,
+        });
       });
     }
 
@@ -551,7 +556,12 @@ chrome.runtime.onMessage.addListener(
       }
 
       playlists[request.playlist].destroy();
-      playlists.splice(request.playlist, 1);
+      delete playlists[request.playlist];
+    }
+
+    if (request.action == "playlistChangePublic") {
+      playlists[request.playlist].set("public", request.public);
+      playlists[request.playlist].save();
     }
 
     if (request.action == "remove") {
