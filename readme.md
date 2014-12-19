@@ -6,9 +6,11 @@ PlayTube is a chrome extension with an end goal of being the best music streamin
 ### Current Features
 
 * Simple button embedded on YouTube video pages to add songs to your playlist
-* Synced playlist across any chrome browser logged into your google account
+* Synced playlists across any chrome browser logged into your google account
 * Beautiful UI for organizing your favorite songs and playing them
 * Shuffle
+* Unlimited private or public playlists
+* Public playlists
 
 
 ### Usage
@@ -22,11 +24,28 @@ PlayTube is a chrome extension with an end goal of being the best music streamin
 [1]: https://chrome.google.com/webstore/detail/playtube/mgcacknkafhdpbnfiokajkfcaldpdnbl
 
 
+## Playlists
+
+To create/use playlists:
+
+* Before you do this, you need to save the songs you wish to add
+* Navigate to the playlists tab
+* Press the + button
+* Type in the name of the playlist and press enter
+* Press edit in the top right
+* Select the songs you wish to add to the playlist
+* Press done
+
+To modify a playlist:
+
+* Go to the playlists tab
+* Press the 3 dots in the top right of a playlist
+* Select the option you wish (rename, make public, or remove)
+
+
 ### Todo
 
-* Multiple Playlists (Should be a drop-down somewhere to select current playlist)
 * Music discovery (Would be nice to have a database of artists, albums & their songs linked to YouTube vids of each song - probably crowdsourced)
-* Playlist sharing (publicly or to friends)
 * Converting YouTube playlists into PlayTube playlists
 
 
