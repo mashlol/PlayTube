@@ -161,7 +161,7 @@ var getPlaylist = function(pid) {
   if (pid == currentPlaylist && playlists[currentPlaylist].songs) {
     sendMessage({
       action: "recievePlaylistSongs",
-      songs: playlists[currentPlaylist.songs],
+      songs: playlists[currentPlaylist].songs,
       name: playlists[currentPlaylist].get("name"),
       id: pid,
       background: playlists[currentPlaylist].get("backgroundVideoId"),
