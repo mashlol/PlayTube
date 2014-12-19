@@ -169,8 +169,36 @@ var getPlaylist = function(pid) {
 };
 
 var generateNewOrder = function(initial) {
-  if (initial) {
-    for (var x = 0; x < savedVideos.length; x++) {
+  var videos = savedVideos;
+  if (currentPlaylist !== false) {
+    videos = playlists[currentPlaylist].songs;
+  }
+
+  if (initial && isShuffle) {
+    var tempList = [];
+    for (var x = 0; x < videos.length; x++) {
+      if (videoOrder[currentVideo] == x) continue;
+
+      tempList.push({
+        number: x,
+        random: Math.random(),
+      });
+    }
+
+    tempList.sort(function(a, b) {
+      return a.random - b.random;
+    });
+
+    videoOrder = tempList.map(function(x) {
+      return x.number;
+    });
+
+    return;
+
+  } else if (initial && !isShuffle) {
+    videoOrder = [];
+
+    for (var x = 0; x < videos.length; x++) {
       videoOrder.push(x);
     }
 
@@ -180,7 +208,7 @@ var generateNewOrder = function(initial) {
   if (isShuffle) {
     // We want to generate a shuffled list FOLLOWING the current song
     var tempList = [];
-    for (var x = 0; x < savedVideos.length; x++) {
+    for (var x = 0; x < videos.length; x++) {
       if (videoOrder[currentVideo] == x) continue;
 
       tempList.push({
@@ -203,9 +231,8 @@ var generateNewOrder = function(initial) {
 
     var actualCurrentVideo = videoOrder[currentVideo] || 0;
 
-    for (var x = 0; x < savedVideos.length; x++) {
-      if (actualCurrentVideo == x) continue;
-      videoOrder.push(x + actualCurrentVideo + 1 % savedVideos.length);
+    for (var x = 0; x < videos.length; x++) {
+      videoOrder.push((x + actualCurrentVideo + 1) % videos.length);
     }
   }
 };
@@ -224,7 +251,21 @@ var createVideoTabIfNotExists = function(callback) {
   }
 };
 
-var playVideo = function(video, relative, restart) {
+var playVideo = function(video, playlist, relative, restart) {
+  if (playlist !== currentPlaylist) {
+    currentPlaylist = parseInt(playlist);
+    if (isNaN(currentPlaylist)) {
+      currentPlaylist = false;
+    }
+    generateNewOrder(true);
+  }
+
+  var videos = savedVideos;
+
+  if (playlist !== false) {
+    videos = playlists[playlist].songs;
+  }
+
   if (relative) {
     var relativeVideo = video;
     video = videoOrder[video];
@@ -239,12 +280,12 @@ var playVideo = function(video, relative, restart) {
   }
 
   createVideoTabIfNotExists(function(tab) {
-    if (tab.url.indexOf(savedVideos[video].get("videoId")) != -1 && !restart) {
+    if (tab.url.indexOf(videos[video].get("videoId")) != -1 && !restart) {
       chrome.tabs.sendMessage(tab.id, {action: "clickVideo"});
     } else {
       chrome.tabs.update(tab.id, {
         url: "https://www.youtube.com/watch?v=" +
-                savedVideos[video].get("videoId"),
+                videos[video].get("videoId"),
         pinned: true
       });
     }
@@ -275,14 +316,14 @@ var nextVideo = function() {
     // If we're not shuffling, this won't really do anything
     generateNewOrder();
   }
-  playVideo(currentVideo + 1 % videoOrder.length, true, true);
+  playVideo(currentVideo + 1 % videoOrder.length, currentPlaylist, true, true);
 };
 
 var previousVideo = function() {
   if (currentVideo == 0) {
-    playVideo(videoOrder.length - 1, true, true);
+    playVideo(videoOrder.length - 1, currentPlaylist, true, true);
   } else {
-    playVideo(currentVideo - 1, true, true);
+    playVideo(currentVideo - 1, currentPlaylist, true, true);
   }
 };
 
@@ -388,7 +429,7 @@ chrome.runtime.onMessage.addListener(
     console.log(request);
 
     if (request.action == "play") {
-      playVideo(request.video);
+      playVideo(request.video, request.playlist);
     }
 
     if (request.action == "pause") {
@@ -404,9 +445,20 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "state") {
+      var videos = savedVideos;
+
+      if (currentPlaylist !== false) {
+        videos = playlists[currentPlaylist].songs;
+      }
+
+      var curSongObj = videos[videoOrder[currentVideo]];
+
       sendResponse({
         videos: savedVideos,
         currentVideo: videoOrder[currentVideo],
+        currentTitle: curSongObj.get("name"),
+        currentDuration: curSongObj.get("duration"),
+        currentPlaylist: currentPlaylist,
         isPlaying: isPlaying,
         volume: volume,
         isShuffle: isShuffle,
@@ -542,7 +594,7 @@ chrome.commands.onCommand.addListener(function(command) {
 
   if (command == "mediaPlayPause") {
     if (!isPlaying) {
-      playVideo(currentVideo, true);
+      playVideo(currentVideo, currentPlaylist, true);
     } else {
       pauseVideo();
     }

@@ -24,6 +24,10 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "recievePlaylistSongs") {
       $(".section.playlists .playlist").html("");
 
+      $(".section.playlists .playlist-full").attr("playlist", request.id);
+      $(".playlist-header").find(".playlist-header-name").text(request.name);
+
+
       for (var x in request.songs) {
         var song = request.songs[x];
 
@@ -33,17 +37,9 @@ chrome.runtime.onMessage.addListener(
       $(".section.playlists .playlist-list").hide();
       $(".section.playlists .playlist").show();
       $(".section.playlists .playlist-header").show();
-
-      $(".playlist-header").find(".playlist-header-name").text(request.name);
-
-      $(".section.playlists .playlist-full").attr("playlist", request.id);
     }
 
     if (request.action == "updateSongProgress") {
-      $currentVideoEle.find(".song-progress").css({
-        width: request.amount + "%"
-      });
-
       $(".location-slider").val(request.amount);
 
       var opposite = (100 - request.amount) / 100;
@@ -51,29 +47,47 @@ chrome.runtime.onMessage.addListener(
         width: (request.amount / 100) * 180 + opposite * 7 - 2
       });
 
-      $currentVideoEle.find(".song-curtime").html(request.curTime + " / ");
 
-      $(".selected-length").html(request.curTime + " / " +
-            $currentVideoEle.find(".song-duration").html());
+      $(".selected-curTime").html(request.curTime);
+
+      if (!$currentVideoEle) return;
+
+      $currentVideoEle.find(".song-progress").css({
+        width: request.amount + "%"
+      });
+      $currentVideoEle.find(".song-curtime").html(request.curTime + " / ");
     }
 
     if (request.action == "currentVideoUpdate") {
       var video = request.currentVideo;
 
-      var $videoEle = $(".song[video='" + video + "']");
-      changeSelectedVideo($videoEle, video);
+      var $videoEle =
+          getCurrentPlaylistEle().find(".song[video='" + video + "']");
+      changeSelectedVideo($videoEle, video, currentPlaylist);
     }
   }
 );
 
 var currentVideo;
+var currentPlaylist = false;
 var $currentVideoEle;
 var isPlaying = false;
 
-var changeSelectedVideo = function($videoEle, video) {
+var getCurrentPlaylistEle = function() {
+  if (currentPlaylist === false) {
+    var $playlist = $(".section.saved .playlist");
+  } else {
+    var $playlist =
+        $(".playlist-full[playlist='" + currentPlaylist + "'] .playlist");
+  }
+
+  return $playlist;
+}
+
+var changeSelectedVideo = function($videoEle, video, playlist) {
   isPlaying = true;
 
-  if (currentVideo == video) {
+  if (currentVideo == video && currentPlaylist === playlist) {
     return;
   }
 
@@ -93,9 +107,10 @@ var changeSelectedVideo = function($videoEle, video) {
   $(".song-curtime").html("");
 
   $(".selected-title").html($currentVideoEle.find(".song-title").html());
+  $(".selected-totalTime").html($currentVideoEle.find(".song-duration").html());
 
   var top = currentVideo * 60 + 72.5;
-  $(".section.saved .playlist").animate({scrollTop: top - 240});
+  getCurrentPlaylistEle().animate({scrollTop: top - 240});
 };
 
 var nextVideo = function() {
@@ -108,27 +123,39 @@ var previousVideo = function() {
 
 var togglePlayPause = function($videoEle) {
   if ($videoEle.attr("video")) {
+    // We clicked on the play button on a song
     var video = $videoEle.attr("video");
+
+    var playlist = $videoEle.parents(".playlist-full").attr("playlist");
+
+    if (!playlist) {
+      playlist = false;
+    }
   } else {
+    // We clicked on the controls button
     var video = currentVideo;
-    $videoEle = $(".song[video='" + video + "']");
+    $videoEle = getCurrentPlaylistEle().find(".song[video='" + video + "']");
+    var playlist = currentPlaylist;
   }
 
-  if (currentVideo == video) {
+  if (currentVideo == video && playlist === currentPlaylist) {
     isPlaying = !isPlaying;
     if (isPlaying) {
       $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
       $videoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
-      sendMessage({action: "play", video: currentVideo});
+
+      sendMessage({action: "play", video: currentVideo, playlist: playlist});
     } else {
       $(".play-pause").html("<i class='fa fa-play'></i>");
       sendMessage({action: "pause"});
     }
   } else {
-    changeSelectedVideo($videoEle, video);
+    changeSelectedVideo($videoEle, video, playlist);
 
-    sendMessage({action: "play", video: currentVideo});
+    sendMessage({action: "play", video: currentVideo, playlist: playlist});
   }
+
+  currentPlaylist = playlist;
 };
 
 var addVideoEle = function(video, index, $playlistEle) {
@@ -136,7 +163,6 @@ var addVideoEle = function(video, index, $playlistEle) {
 
   $newSong.find(".song-title").html(video.title);
   $newSong.find(".song-duration").html(video.duration);
-
 
   $newSong.find(".background").css({
     "background": "url(https://i.ytimg.com/vi/" + video.video + "/default.jpg)",
@@ -147,6 +173,20 @@ var addVideoEle = function(video, index, $playlistEle) {
 
   $newSong.attr("video", index);
   $newSong.attr("videoId", video.video);
+
+  var playlist =
+      parseInt($playlistEle.parents(".playlist-full").attr("playlist"));
+  if (currentVideo == index && currentPlaylist === playlist) {
+    $currentVideoEle = $newSong;
+
+    $newSong.addClass("selected");
+    if (isPlaying) {
+      $newSong.find(".play-pause").html("<i class='fa fa-pause'></i>");
+    }
+
+    var top = currentVideo * 60 + 72.5;
+    getCurrentPlaylistEle().animate({scrollTop: top - 240});
+  }
 
   $playlistEle.append($newSong);
 
@@ -527,19 +567,41 @@ $(function() {
       return;
     }
 
-    currentVideo = response.currentVideo;
-    $currentVideoEle = $(".song[video='" + currentVideo + "']");
+    $(".selected-title").html(response.currentTitle);
+    $(".selected-totalTime").html(response.currentDuration);
 
     if (isPlaying) {
       $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
-      $currentVideoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
     }
 
+    currentVideo = response.currentVideo;
+    currentPlaylist = response.currentPlaylist;
+
+    if (currentPlaylist !== false) {
+      $(".nav-button").removeClass("active");
+      $(".nav-button[opens='playlists']").addClass("active");
+
+      $(".section").hide();
+      $(".section.playlists").show();
+
+      // Request to get this playlists songs
+      sendMessage({
+        action: "getPlaylistSongs",
+        playlist: currentPlaylist
+      });
+
+      return;
+    }
+
+    $currentVideoEle =
+        getCurrentPlaylistEle().find(".song[video='" + currentVideo + "']");
+
+    if (isPlaying) {
+      $currentVideoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
+    }
     $currentVideoEle.addClass("selected");
 
     var top = $currentVideoEle.offset().top;
-    $(".section.saved .playlist").animate({scrollTop: top - 240});
-
-    $(".selected-title").html($currentVideoEle.find(".song-title").html());
+    getCurrentPlaylistEle().animate({scrollTop: top - 240});
   });
 });
