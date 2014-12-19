@@ -624,6 +624,10 @@ $(function() {
     event.stopPropagation();
   });
 
+  $("body").on("click", function() {
+    $(".playlist-button-options").removeClass("visible");
+  });
+
   // Get what the current state is
   sendMessage({action: "state"}, function(response) {
     for (var x in response.playlists) {
