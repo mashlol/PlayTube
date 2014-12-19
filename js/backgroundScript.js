@@ -24,6 +24,7 @@ var Playlist = Parse.Object.extend("Playlist", {
     return {
       id: this.id,
       name: this.get("name"),
+      background: this.get("backgroundVideoId"),
     }
   }
 });
@@ -163,6 +164,7 @@ var getPlaylist = function(pid) {
       songs: songs,
       name: playlist.get("name"),
       id: pid,
+      background: playlist.get("backgroundVideoId"),
     });
 
     playlist.songs = songs;
@@ -517,13 +519,19 @@ chrome.runtime.onMessage.addListener(
 
     if (request.action == "editModeLeave") {
       var playlist = playlists[request.playlist];
-      playlist.save().then(function() {
+
+      playlist.save().then(function(playlist) {
+        // Add a new background for this playlist
+        var relation = playlist.relation("songs");
+
+        return relation.query().limit(1).find();
+      }).then(function(songs) {
+        playlist.set("backgroundVideoId", songs[0].get("videoId"));
+
+        return playlist.save();
+      }).then(function() {
         getPlaylist(request.playlist);
       });
-
-      if (currentPlaylist == request.playlist) {
-        generateNewOrder();
-      }
     }
 
     if (request.action == "renamePlaylist") {

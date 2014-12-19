@@ -40,6 +40,21 @@ chrome.runtime.onMessage.addListener(
       $(".section.playlists .playlist-list").hide();
       $(".section.playlists .playlist").show();
       $(".section.playlists .playlist-header").show();
+
+      if (!request.background) return;
+
+      var $playlistButton =
+          $(".section.playlists .playlist-list .playlist-button[playlist='"  +
+                                                            request.id +
+                                                            "']");
+
+      $playlistButton.find(".playlist-button-background").css({
+        "background": "url(https://i.ytimg.com/vi/" +
+                                        request.background +
+                                        "/default.jpg)",
+        "background-size": "150%",
+        "background-position": "50% 50%",
+      });
     }
 
     if (request.action == "updateSongProgress") {
@@ -49,7 +64,6 @@ chrome.runtime.onMessage.addListener(
       $(".location-slider-left").css({
         width: (request.amount / 100) * 180 + opposite * 7 - 2
       });
-
 
       $(".selected-curTime").html(request.curTime);
 
@@ -200,6 +214,17 @@ var addPlaylistEle = function(playlist, id) {
   var $playlistBtnEle = $("#templates .playlist-button").clone();
   $playlistBtnEle.find(".playlist-button-title").text(playlist.name);
   $playlistBtnEle.attr("playlist", id);
+
+  if (playlist.background) {
+    $playlistBtnEle.find(".playlist-button-background").css({
+      "background": "url(https://i.ytimg.com/vi/" +
+                                      playlist.background +
+                                      "/default.jpg)",
+      "background-size": "150%",
+      "background-position": "50% 50%",
+    });
+  }
+
   $(".playlist-add").before($playlistBtnEle);
 };
 

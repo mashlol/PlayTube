@@ -509,15 +509,16 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-list .playlist-button-background {
-    background: url(../icon.png);
     width: 105%;
     height: 105%;
     margin-top: -2.5%;
     margin-left: -2.5%;
 
+    background: url(../icon.png);
     background-size: 150%;
     background-position-y: 50%;
     background-position-x: 50%;
+
     -webkit-filter: blur(6px);
 
     position: absolute;
