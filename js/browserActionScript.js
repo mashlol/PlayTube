@@ -30,6 +30,12 @@ chrome.runtime.onMessage.addListener(
       $(".section.playlists .playlist-full").attr("playlist", request.id);
       $(".playlist-header").find(".playlist-header-name").text(request.name);
 
+      if (request.songs.length > 0) {
+          $(".section.playlists .playlist-help").hide();
+      } else {
+          $(".section.playlists .playlist-help").show();
+      }
+
 
       for (var x in request.songs) {
         var song = request.songs[x];
@@ -40,7 +46,6 @@ chrome.runtime.onMessage.addListener(
       $(".section.playlists .playlist-list").hide();
       $(".section.playlists .playlist").show();
       $(".section.playlists .playlist-header").show();
-
 
       $(".spinner").remove();
 
@@ -492,6 +497,11 @@ $(function() {
       playlist: playlist
     });
 
+    $(".section.playlists .playlist-list").hide();
+    $(".section.playlists .playlist").show();
+    $(".section.playlists .playlist-header").show();
+    $(".section.playlists .playlist-help").show();
+
     createSpinner();
   });
 
@@ -506,6 +516,8 @@ $(function() {
     $(".playlist-edit").toggleClass("active");
 
     if ($(".playlist-edit").hasClass("active")) {
+      $(".section.playlists .playlist-help").hide();
+
       // Record all of the video ids in this playlist
       var playlist = [];
       $(".section.playlists .playlist .song").each(function() {

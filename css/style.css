@@ -712,3 +712,7 @@ input[type=range]::-webkit-slider-runnable-track {
     left: 10px;
     top: 7px;
 }
+
+.playlist-help {
+    padding: 20px;
+}
