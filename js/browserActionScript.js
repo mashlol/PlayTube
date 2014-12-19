@@ -25,34 +25,34 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "recievePlaylistSongs") {
-      $(".section.playlists .playlist").html("");
+      $(".section.active .playlist").html("");
 
-      $(".section.playlists .playlist-full").attr("playlist", request.id);
-      $(".playlist-header").find(".playlist-header-name").text(request.name);
+      $(".section.active .playlist-full").attr("playlist", request.id);
+      $(".section.active .playlist-header .playlist-header-name")
+          .text(request.name);
 
       if (request.songs.length > 0) {
-          $(".section.playlists .playlist-help").hide();
+          $(".section.active .playlist-help").hide();
       } else {
-          $(".section.playlists .playlist-help").show();
+          $(".section.active .playlist-help").show();
       }
-
 
       for (var x in request.songs) {
         var song = request.songs[x];
 
-        addVideoEle(song, x, $(".section.playlists .playlist"));
+        addVideoEle(song, x, $(".section.active .playlist"));
       }
 
-      $(".section.playlists .playlist-list").hide();
-      $(".section.playlists .playlist").show();
-      $(".section.playlists .playlist-header").show();
+      $(".section.active .playlist-list").hide();
+      $(".section.active .playlist").show();
+      $(".section.active .playlist-header").show();
 
       $(".spinner").remove();
 
       if (!request.background) return;
 
       var $playlistButton =
-          $(".section.playlists .playlist-list .playlist-button[playlist='"  +
+          $(".section.active .playlist-list .playlist-button[playlist='"  +
                                                             request.id +
                                                             "']");
 
@@ -93,9 +93,20 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "addPlaylistEle") {
-      addPlaylistEle(request.playlist);
+      $(".playlist-add").before(createPlaylistEle(request.playlist));
 
       $(".spinner").remove();
+    }
+
+    if (request.action == "updatePublicPlaylists") {
+      $(".spinner").remove();
+      $(".section.browse .playlist-list .playlist-button").remove();
+
+      for (var x in request.playlists) {
+        var playlist = request.playlists[x];
+
+        $(".section.browse .playlist-list").append(createPlaylistEle(playlist));
+      }
     }
   }
 );
@@ -114,7 +125,7 @@ var getCurrentPlaylistEle = function() {
   }
 
   return $playlist;
-}
+};
 
 var changeSelectedVideo = function($videoEle, video, playlist) {
   isPlaying = true;
@@ -224,7 +235,7 @@ var addVideoEle = function(video, index, $playlistEle) {
   noVideoCheck();
 };
 
-var addPlaylistEle = function(playlist, id) {
+var createPlaylistEle = function(playlist, id, $playlistList) {
   var $playlistBtnEle = $("#templates .playlist-button").clone();
   $playlistBtnEle.find(".playlist-button-title").text(playlist.name);
   $playlistBtnEle.attr("playlist", playlist.id);
@@ -243,7 +254,7 @@ var addPlaylistEle = function(playlist, id) {
     });
   }
 
-  $(".playlist-add").before($playlistBtnEle);
+  return $playlistBtnEle;
 };
 
 var isVideoAlreadySaved = function(videoId) {
@@ -455,7 +466,9 @@ $(function() {
     $(this).addClass("active");
 
     $(".section").hide();
+    $(".section").removeClass("active");
     $(".section." + opens).show();
+    $(".section." + opens).addClass("active");
   });
 
   $(".playlist-add").on("click", function() {
@@ -497,10 +510,10 @@ $(function() {
       playlist: playlist
     });
 
-    $(".section.playlists .playlist-list").hide();
-    $(".section.playlists .playlist").show();
-    $(".section.playlists .playlist-header").show();
-    $(".section.playlists .playlist-help").show();
+    $(".section.active .playlist-list").hide();
+    $(".section.active .playlist").show();
+    $(".section.active .playlist-header").show();
+    $(".section.active .playlist-help").show();
 
     createSpinner();
   });
@@ -508,8 +521,15 @@ $(function() {
   $(".playlist-back").on("click", function() {
     $(".playlist-list").show();
 
-    $(".section.playlists .playlist").hide();
-    $(".section.playlists .playlist-header").hide();
+    $(".section.active .playlist").hide();
+    $(".section.active .playlist-header").hide();
+
+    if ($(".section.browse .playlist-list").is(":visible")) {
+      createSpinner();
+      sendMessage({
+        action: "browse",
+      });
+    }
   });
 
   $(".playlist-edit").on("click", function() {
@@ -692,12 +712,26 @@ $(function() {
     $(".playlist-button-options").removeClass("visible");
   });
 
+  $(".nav-button[opens='browse']").on("click", function() {
+    if ($(".section.browse .playlist-list").is(":visible")) {
+      createSpinner();
+      sendMessage({
+        action: "browse",
+      });
+    }
+  });
+
   // Get what the current state is
   sendMessage({action: "state"}, function(response) {
     for (var x in response.playlists) {
       var playlist = response.playlists[x];
 
-      addPlaylistEle(playlist);
+      // If its a public playlist, ignore it
+      if (!playlist.owned) {
+        continue;
+      }
+
+      $(".playlist-add").before(createPlaylistEle(playlist));
     }
 
     for (var x in response.videos) {
@@ -750,10 +784,20 @@ $(function() {
 
     if (currentPlaylist !== false) {
       $(".nav-button").removeClass("active");
-      $(".nav-button[opens='playlists']").addClass("active");
-
       $(".section").hide();
-      $(".section.playlists").show();
+      $(".section").removeClass("active");
+
+      if (response.playlists[currentPlaylist].owned) {
+        $(".nav-button[opens='playlists']").addClass("active");
+
+        $(".section.playlists").show();
+        $(".section.playlists").addClass("active");
+      } else {
+        $(".nav-button[opens='browse']").addClass("active");
+
+        $(".section.browse").addClass("active");
+        $(".section.browse").show();
+      }
 
       // Request to get this playlists songs
       sendMessage({

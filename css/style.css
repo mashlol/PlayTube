@@ -672,10 +672,6 @@ input[type=range]::-webkit-slider-runnable-track {
     color: #e74c3c;
 }
 
-.browse {
-    padding: 10px;
-}
-
 .spinner {
     position: absolute;
     top: 0;
@@ -715,4 +711,16 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .playlist-help {
     padding: 20px;
+}
+
+.section.browse .playlist-button-options-toggle {
+    display: none;
+}
+
+.nav-button[opens="browse"] i {
+    margin-top: 2px;
+}
+
+.nav-button[opens="browse"] .nav-title {
+    margin-top: -6px;
 }

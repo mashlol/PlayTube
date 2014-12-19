@@ -26,6 +26,7 @@ var Playlist = Parse.Object.extend("Playlist", {
       name: this.get("name"),
       background: this.get("backgroundVideoId"),
       public: this.get("public") || false,
+      owned: this.get("user").id == playTubeUser.id,
     }
   }
 });
@@ -156,6 +157,19 @@ var addSong = function(song) {
 };
 
 var getPlaylist = function(pid) {
+  // We don't want to update our songs for the current playlist
+  if (pid == currentPlaylist && playlists[currentPlaylist].songs) {
+    sendMessage({
+      action: "recievePlaylistSongs",
+      songs: playlists[currentPlaylist.songs],
+      name: playlists[currentPlaylist].get("name"),
+      id: pid,
+      background: playlists[currentPlaylist].get("backgroundVideoId"),
+    });
+
+    return;
+  }
+
   var playlist = playlists[pid];
 
   var relation = playlist.relation("songs");
@@ -259,6 +273,7 @@ var createVideoTabIfNotExists = function(callback) {
 
 var playVideo = function(video, playlist, relative, restart) {
   if (playlist !== currentPlaylist) {
+    var playlistChanged = true;
     currentPlaylist = playlist;
     generateNewOrder(true);
   }
@@ -291,6 +306,17 @@ var playVideo = function(video, playlist, relative, restart) {
                 videos[video].get("videoId"),
         pinned: true
       });
+    }
+
+    // If we changed songs, record an extra play to this playlist
+    // Only if the playlist isn't ours, though
+    if ((currentVideo != parseInt(relativeVideo) || playlistChanged)
+                                                        && playlist !== false) {
+      var playlistObj = playlists[playlist];
+      if (playlistObj.get("user").id != playTubeUser.id) {
+        playlistObj.increment("num_plays");
+        playlistObj.save();
+      }
     }
 
     currentVideo = parseInt(relativeVideo);
@@ -594,6 +620,31 @@ chrome.runtime.onMessage.addListener(
       }
 
       removeSong(removedSong);
+    }
+
+
+    if (request.action == "browse") {
+      var query = new Parse.Query(Playlist);
+      query.equalTo("public", true);
+      query.notEqualTo("user", playTubeUser);
+      query.ascending("num_plays");
+      query.find().then(function(plists) {
+        for (var x in plists) {
+          var plist = plists[x];
+
+          if (playlists[plist.id]) {
+            var songs = playlists[plist.id].songs;
+          }
+
+          playlists[plist.id] = plist;
+          playlists[plist.id].songs = songs;
+        }
+
+        sendMessage({
+          action: "updatePublicPlaylists",
+          playlists: plists,
+        });
+      });
     }
 
     if (request.action == "isPlayTab") {
