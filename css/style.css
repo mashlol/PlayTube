@@ -545,15 +545,13 @@ input[type=range]::-webkit-slider-runnable-track {
     margin-top: 50px;
 }
 
-.playlist-list .playlist-add input {
-    display: none;
+.playlist-list .playlist-button input {
     position: absolute;
     width: 80%;
     bottom: 5px;
     left: 10%;
     border: none;
     color: white;
-    display: none;
     outline: none;
     background: none;
     text-align: center;
@@ -609,4 +607,53 @@ input[type=range]::-webkit-slider-runnable-track {
 .playlist-edit.active .not-editing,
 .playlist-edit .editing {
     display: none;
+}
+
+.playlist-button-options-toggle {
+    position: absolute;
+    background: none;
+    border: none;
+    width: 25px;
+    height: 25px;
+    top: 5px;
+    right: 5px;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    outline: none;
+}
+
+.playlist-button-options-toggle:hover {
+     background: rgba(0,0,0,0.5);
+}
+
+.playlist-button-options {
+    font-size: 12px;
+    position: absolute;
+    width: 100px;
+    background: rgba(0,0,0,0.7);
+    top: 30px;
+    right: 5px;
+    overflow: hidden;
+    display: none;
+}
+
+.playlist-button-options.visible {
+    display: block;
+}
+
+.playlist-button-options > div {
+    padding: 5px;
+}
+
+.playlist-button-options > div:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.playlist-button-options i {
+    margin-right: 10px;
+}
+
+.playlist-remove {
+    color: #e74c3c;
 }

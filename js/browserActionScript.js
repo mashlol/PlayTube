@@ -1,4 +1,7 @@
-Parse.initialize("3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC", "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf");
+Parse.initialize(
+  "3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC",
+  "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf"
+);
 
 var track = function(event, dimensions) {
   Parse.Analytics.track(event, dimensions);
@@ -519,6 +522,68 @@ $(function() {
         playlist: $(this).parents(".playlist-full").attr("playlist"),
       });
     }
+  });
+
+  $("body").on("click", ".playlist-button-options-toggle", function(event) {
+    $(this).next(".playlist-button-options").toggleClass("visible");
+
+    event.stopPropagation();
+  });
+
+  $("body").on("click", ".playlist-remove", function(event) {
+    var $playlistBtn = $(this).parents(".playlist-button")
+    var playlist = $playlistBtn.attr("playlist");
+
+    $playlistBtn.remove();
+
+    sendMessage({action: "removePlaylist", playlist: playlist});
+
+    event.stopPropagation();
+  });
+
+  $("body").on("click", ".playlist-rename", function(event) {
+    $(this).parents(".playlist-button-options").removeClass("visible");
+
+    var $playlistBtn = $(this).parents(".playlist-button")
+    var playlist = $playlistBtn.attr("playlist");
+
+    var $nameEle = $playlistBtn.find(".playlist-button-title");
+
+    var name = $nameEle.text();
+
+    $nameEle.remove();
+
+    var $inputEle = $("<input />").attr("type", "name").val(name).css({
+      display: "block",
+    });
+    $playlistBtn.append($inputEle);
+
+    $inputEle.focus();
+
+    $inputEle.on("blur", function() {
+      $inputEle.remove();
+
+      $playlistBtn.append($nameEle);
+    });
+
+    $inputEle.on("keyup", function(event) {
+      if (event.keyCode == 13) {
+        var newName = $(this).val();
+
+        sendMessage({
+          action: "renamePlaylist",
+          playlist: playlist,
+          name: newName,
+        });
+
+        $inputEle.remove();
+
+        $nameEle.text(newName);
+        $playlistBtn.append($nameEle);
+      }
+    });
+
+    event.stopPropagation();
   });
 
   // Get what the current state is

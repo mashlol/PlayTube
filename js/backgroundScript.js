@@ -1,7 +1,10 @@
 // -----------------------------------------------------------------------------
 // Parse
 // -----------------------------------------------------------------------------
-Parse.initialize("3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC", "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf");
+Parse.initialize(
+  "3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC",
+  "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf"
+);
 
 var User = Parse.User;
 
@@ -517,6 +520,28 @@ chrome.runtime.onMessage.addListener(
       playlist.save().then(function() {
         getPlaylist(request.playlist);
       });
+
+      if (currentPlaylist == request.playlist) {
+        generateNewOrder();
+      }
+    }
+
+    if (request.action == "renamePlaylist") {
+      playlists[request.playlist].set("name", request.name);
+      playlists[request.playlist].save();
+    }
+
+    if (request.action == "removePlaylist") {
+      if (currentPlaylist == request.playlist) {
+        pauseVideo();
+
+        currentPlaylist = false;
+        currentVideo = 0;
+        generateNewOrder();
+      }
+
+      playlists[request.playlist].destroy();
+      playlists.splice(request.playlist, 1);
     }
 
     if (request.action == "remove") {
