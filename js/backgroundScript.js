@@ -561,6 +561,11 @@ chrome.runtime.onMessage.addListener(
 
     if (request.action == "playlistChangePublic") {
       playlists[request.playlist].set("public", request.public);
+      var newACL = new Parse.ACL(playTubeUser);
+      if (request.public) {
+        newACL.setPublicReadAccess(true);
+      }
+      playlists[request.playlist].setACL(newACL);
       playlists[request.playlist].save();
     }
 
