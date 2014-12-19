@@ -127,6 +127,8 @@ ol {
 
 .sections {
     margin-top: 80px;
+    height: 400px;
+    position: relative;
 }
 
 .playlist {
@@ -661,4 +663,19 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .browse {
     padding: 10px;
+}
+
+.spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    font-size: 36px;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    text-align: center;
+    padding-top: 164px;
 }

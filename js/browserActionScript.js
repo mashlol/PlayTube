@@ -55,6 +55,8 @@ chrome.runtime.onMessage.addListener(
         "background-size": "150%",
         "background-position": "50% 50%",
       });
+
+      $(".spinner").remove();
     }
 
     if (request.action == "updateSongProgress") {
@@ -268,6 +270,13 @@ var noVideoCheck = function() {
   return noVideos;
 };
 
+var createSpinner = function() {
+  var spinner = $("<div>").html('<i class="fa fa-spin fa-spinner"></i>')
+          .addClass("spinner")
+
+  $(".sections").append(spinner);
+}
+
 $(function() {
   $(".controls .play-pause").on("click", function(event) {
     togglePlayPause($(this));
@@ -474,6 +483,8 @@ $(function() {
       action: "getPlaylistSongs",
       playlist: playlist
     });
+
+    createSpinner();
   });
 
   $(".playlist-back").on("click", function() {
@@ -679,6 +690,7 @@ $(function() {
         action: "getPlaylistSongs",
         playlist: currentPlaylist
       });
+      createSpinner();
 
       return;
     }
