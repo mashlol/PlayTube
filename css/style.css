@@ -517,9 +517,10 @@ input[type=range]::-webkit-slider-runnable-track {
     margin-left: -2.5%;
 
     background: url(../icon.png);
-    background-size: 150%;
+    background-size: 80%;
     background-position-y: 50%;
     background-position-x: 50%;
+    background-repeat: no-repeat;
 
     -webkit-filter: blur(6px);
 

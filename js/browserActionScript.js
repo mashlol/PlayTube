@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(
         "background": "url(https://i.ytimg.com/vi/" +
                                         request.background +
                                         "/default.jpg)",
-        "background-size": "150%",
+        "background-size": "200%",
         "background-position": "50% 50%",
       });
 
@@ -224,7 +224,7 @@ var addPlaylistEle = function(playlist, id) {
       "background": "url(https://i.ytimg.com/vi/" +
                                       playlist.background +
                                       "/default.jpg)",
-      "background-size": "150%",
+      "background-size": "200%",
       "background-position": "50% 50%",
     });
   }
