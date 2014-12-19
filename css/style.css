@@ -690,3 +690,25 @@ input[type=range]::-webkit-slider-runnable-track {
     text-align: center;
     padding-top: 164px;
 }
+
+.playlist-list-search {
+    padding: 0px 0 20px 0;
+    position: relative;
+}
+
+.playlist-list-search input {
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    border: 0;
+    outline: none;
+    padding: 0 10px 0 30px;
+}
+
+.playlist-list-search i {
+    font-size: 14px;
+    position: absolute;
+    color: #000;
+    left: 10px;
+    top: 7px;
+}

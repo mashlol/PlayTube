@@ -659,6 +659,23 @@ $(function() {
     event.stopPropagation();
   });
 
+  $(".playlist-list .playlist-list-search input").on("input", function() {
+    var query = $(this).val().toLowerCase();
+
+    var $siblings =
+        $(this).parent(".playlist-list-search").siblings(".playlist-button");
+
+    $siblings.each(function() {
+      var playlistName =
+          $(this).find(".playlist-button-title").text().toLowerCase();
+      if (playlistName.indexOf(query) == -1) {
+        $(this).hide();
+      } else {
+        $(this).show();
+      }
+    });
+  });
+
   $("body").on("click", function() {
     $(".playlist-button-options").removeClass("visible");
   });
