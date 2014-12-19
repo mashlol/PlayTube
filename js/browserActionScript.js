@@ -21,6 +21,24 @@ chrome.runtime.onMessage.addListener(
       }
     }
 
+    if (request.action == "recievePlaylistSongs") {
+      $(".section.playlists .playlist").html("");
+
+      for (var x in request.songs) {
+        var song = request.songs[x];
+
+        addVideoEle(song, x, $(".section.playlists .playlist"));
+      }
+
+      $(".section.playlists .playlist-list").hide();
+      $(".section.playlists .playlist").show();
+      $(".section.playlists .playlist-header").show();
+
+      $(".playlist-header").find(".playlist-header-name").text(request.name);
+
+      $(".section.playlists .playlist-full").attr("playlist", request.id);
+    }
+
     if (request.action == "updateSongProgress") {
       $currentVideoEle.find(".song-progress").css({
         width: request.amount + "%"
@@ -77,7 +95,7 @@ var changeSelectedVideo = function($videoEle, video) {
   $(".selected-title").html($currentVideoEle.find(".song-title").html());
 
   var top = currentVideo * 60 + 72.5;
-  $(".playlist").animate({scrollTop: top - 240});
+  $(".section.saved .playlist").animate({scrollTop: top - 240});
 };
 
 var nextVideo = function() {
@@ -113,7 +131,7 @@ var togglePlayPause = function($videoEle) {
   }
 };
 
-var addVideoEle = function(video, index) {
+var addVideoEle = function(video, index, $playlistEle) {
   $newSong = $("#templates .song").clone();
 
   $newSong.find(".song-title").html(video.title);
@@ -130,9 +148,16 @@ var addVideoEle = function(video, index) {
   $newSong.attr("video", index);
   $newSong.attr("videoId", video.video);
 
-  $(".playlist").append($newSong);
+  $playlistEle.append($newSong);
 
   noVideoCheck();
+};
+
+var addPlaylistEle = function(playlist, id) {
+  var $playlistBtnEle = $("#templates .playlist-button").clone();
+  $playlistBtnEle.find(".playlist-button-title").text(playlist.name);
+  $playlistBtnEle.attr("playlist", id);
+  $(".playlist-add").before($playlistBtnEle);
 };
 
 var isVideoAlreadySaved = function(videoId) {
@@ -164,7 +189,7 @@ var getVideoIdFromUrl = function(url) {
 };
 
 var noVideoCheck = function() {
-  var noVideos = $(".playlist .song").length == 0;
+  var noVideos = $(".section.saved .playlist .song").length == 0;
 
   if (!noVideos) {
     $(".help").hide();
@@ -281,11 +306,15 @@ $(function() {
           duration: response.duration,
         });
 
-        addVideoEle({
-          video: video,
-          title: response.title,
-          duration: response.duration,
-        }, $(".playlist .song").length);
+        addVideoEle(
+          {
+            video: video,
+            title: response.title,
+            duration: response.duration,
+          },
+          $(".section.saved .playlist .song").length,
+          $(".section.saved .playlist")
+        );
 
         $(".add").html("<i class='fa fa-check'></i>");
       });
@@ -326,12 +355,144 @@ $(function() {
     track("playPauseSpecific");
   });
 
+  $(".nav-button").on("click", function() {
+    var opens = $(this).attr("opens");
+
+    $(".nav-button").removeClass("active");
+    $(this).addClass("active");
+
+    $(".section").hide();
+    $(".section." + opens).show();
+  });
+
+  $(".playlist-add").on("click", function() {
+    $(".new-playlist-name").show();
+    $(".new-playlist-name").focus();
+  });
+
+  var getPlaylistNameAndClear = function() {
+    var name = $(".new-playlist-name").val();
+    $(".new-playlist-name").val("");
+
+    $(".new-playlist-name").blur();
+    $(".new-playlist-name").hide();
+
+    return name;
+  }
+
+  var addPlaylist = function() {
+    var name = getPlaylistNameAndClear();
+
+    addPlaylistEle({
+      name: name,
+    }, $(".playlist-list .playlist-button").length - 1);
+
+    sendMessage({action: "addPlaylist", name: name});
+  };
+
+  $(".new-playlist-name").on("blur", getPlaylistNameAndClear);
+  $(".new-playlist-name").on("keyup", function(event) {
+    if (event.keyCode == 13) {
+      addPlaylist();
+    }
+  });
+
+  $("body").on("click", ".playlist-button", function() {
+    var playlist = $(this).attr("playlist");
+
+    if (!playlist) return; // Probably clicked + button
+
+    sendMessage({
+      action: "getPlaylistSongs",
+      playlist: playlist
+    });
+  });
+
+  $(".playlist-back").on("click", function() {
+    $(".playlist-list").show();
+
+    $(".section.playlists .playlist").hide();
+    $(".section.playlists .playlist-header").hide();
+  });
+
+  var editing = false;
+  $(".playlist-edit").on("click", function() {
+    $(".playlist-edit").toggleClass("active");
+
+    if ($(".playlist-edit").hasClass("active")) {
+      // Record all of the video ids in this playlist
+      var playlist = [];
+      $(".section.playlists .playlist .song").each(function() {
+        playlist.push($(this).attr("videoId"));
+      });
+
+      // Copy over all the songs from our saved playlist
+      $(".section.playlists .playlist").html(
+        $(".section.saved .playlist").html()
+      );
+
+      $(".section.playlists .playlist .song").each(function() {
+        $(this).addClass("song-playlist-edit");
+        $(this).removeClass("selected");
+
+        var videoId = $(this).attr("videoId");
+
+        $(this).find(".play-pause")
+          .removeClass("play-pause")
+          .addClass("playlist-toggle")
+          .find("i")
+          .removeClass("fa-play")
+          .addClass("fa-square-o");
+
+        if (playlist.indexOf(videoId) != -1) {
+          $(this).find(".playlist-toggle i")
+            .removeClass("fa-square-o")
+            .addClass("fa-check-square-o");
+        }
+      });
+    } else {
+      sendMessage({
+        action: "editModeLeave",
+        playlist: $(this).parents(".playlist-full").attr("playlist"),
+      });
+    }
+  });
+
+  $("body").on("click", ".playlist-toggle", function() {
+    var song = $(this).parent(".song").attr("video");
+
+    $(this).find("i")
+      .toggleClass("fa-square-o")
+      .toggleClass("fa-check-square-o");
+
+    // If we now are unchecked, remove us from playlist
+    if ($(this).find("i").hasClass("fa-square-o")) {
+      sendMessage({
+        action: "playlistRemoveSong",
+        song: song,
+        playlist: $(this).parents(".playlist-full").attr("playlist"),
+      });
+    } else {
+      sendMessage({
+        action: "playlistAddSong",
+        song: song,
+        playlist: $(this).parents(".playlist-full").attr("playlist"),
+      });
+    }
+  });
+
   // Get what the current state is
   sendMessage({action: "state"}, function(response) {
+    for (var x in response.playlists) {
+      var playlist = response.playlists[x];
+
+      addPlaylistEle(playlist, x);
+    }
+
     for (var x in response.videos) {
       var video = response.videos[x];
 
-      addVideoEle(video, x);
+      addVideoEle(video, x, $(".section.saved .playlist"));
     }
 
     isPlaying = response.isPlaying;
@@ -377,7 +538,7 @@ $(function() {
     $currentVideoEle.addClass("selected");
 
     var top = $currentVideoEle.offset().top;
-    $(".playlist").animate({scrollTop: top - 240});
+    $(".section.saved .playlist").animate({scrollTop: top - 240});
 
     $(".selected-title").html($currentVideoEle.find(".song-title").html());
   });

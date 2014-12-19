@@ -7,8 +7,8 @@
 body {
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
-    color: #222;
-    background: #eee;
+    color: #eee;
+    background: #222;
     width: 540px;
     height: 480px;
 }
@@ -46,7 +46,12 @@ ol {
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
+.nav-button:hover {
+    background: #3c4e60;
+}
+
 .nav-button.active {
+    background: #2c3e50;
     color: #2ecc71;
     text-shadow: 0 0 10px #2ecc71;
 }
@@ -120,10 +125,17 @@ ol {
     height: 480px;
 }
 
-.playlist {
+.sections {
     margin-top: 80px;
+}
+
+.playlist {
     height: 400px;
     overflow-y: scroll;
+}
+
+.playlist-full .playlist {
+    height: 370px;
 }
 
 .background, .tint {
@@ -198,7 +210,8 @@ ol {
     font-weight: 800;
 }
 
-.song .play-pause {
+.song .play-pause,
+.song .playlist-toggle {
     position: absolute;
     z-index: 1;
     left: 10px;
@@ -226,6 +239,11 @@ ol {
     font-size: 16px;
     display: none;
     color: white;
+}
+
+.fa-check-square-o {
+    position: relative;
+    left: 1px;
 }
 
 .song.selected .song-remove,
@@ -413,12 +431,24 @@ input[type=range]::-webkit-slider-runnable-track {
     display: block;
 }
 
+.song.song-playlist-edit:hover .song-remove {
+    display: none;
+}
+
 .song:hover .song-length {
     right: 50px;
 }
 
+.song.song-playlist-edit:hover .song-length {
+    right: 10px;
+}
+
 .song:hover .song-title {
     width: 300px;
+}
+
+.song.song-playlist-edit:hover .song-title {
+    width: 330px;
 }
 
 .search {
@@ -441,4 +471,142 @@ input[type=range]::-webkit-slider-runnable-track {
 .search-bar.visible {
     padding: 10px;
     width: 245px;
+}
+
+.playlist-list {
+    padding: 10px 0 10px 10px;
+    font-size: 0;
+    overflow-y: scroll;
+    height: 400px;
+}
+
+.playlist-list .playlist-button {
+    width: 144px;
+    height: 144px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 5px -2px black;
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.playlist-list .playlist-button:hover {
+    box-shadow: 0 0 6px -2px #2ecc71, 0 4px 5px -2px black;
+}
+
+.playlist-list .playlist-button-tint {
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.7) 87%,rgba(0,0,0,0.7) 100%);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.playlist-list .playlist-button:hover .playlist-button-tint {
+    opacity: 0.9;
+}
+
+.playlist-list .playlist-button-background {
+    background: url(../icon.png);
+    width: 105%;
+    height: 105%;
+    margin-top: -2.5%;
+    margin-left: -2.5%;
+
+    background-size: 150%;
+    background-position-y: 50%;
+    background-position-x: 50%;
+    -webkit-filter: blur(6px);
+
+    position: absolute;
+    z-index: 0;
+}
+
+.playlist-list .playlist-button-title {
+    color: white;
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    font-size: 12px;
+}
+
+.playlist-list .playlist-add {
+    border: 1px dashed #2ecc71;
+}
+
+.playlist-list .playlist-add:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.playlist-list .playlist-add i {
+    font-size: 50px;
+    margin-top: 50px;
+}
+
+.playlist-list .playlist-add input {
+    display: none;
+    position: absolute;
+    width: 80%;
+    bottom: 5px;
+    left: 10%;
+    border: none;
+    color: white;
+    display: none;
+    outline: none;
+    background: none;
+    text-align: center;
+    font-size: 12px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+}
+
+.playlist-header {
+    height: 30px;
+    line-height: 30px;
+    background: #111;
+    color: #eee;
+}
+
+.playlist-header .playlist-header-name {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.playlist-header button {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    background: none;
+    border: none;
+    outline: none;
+    color: #eee;
+    cursor: pointer;
+    padding-left: 20px;
+}
+
+.playlist-header button i {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.playlist-header .playlist-edit {
+    float: right;
+    margin-top: 5px;
+    margin-right: 20px;
+}
+
+.playlist-header .playlist-edit i {
+    margin-right: 3px;
+    vertical-align: middle;
+}
+
+.playlist-edit.active .editing,
+.playlist-edit .not-editing {
+    display: block;
+}
+
+.playlist-edit.active .not-editing,
+.playlist-edit .editing {
+    display: none;
 }

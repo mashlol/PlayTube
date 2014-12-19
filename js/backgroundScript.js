@@ -1,7 +1,26 @@
 Parse.initialize("3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC", "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf");
 
 var User = Parse.User;
-var Song = Parse.Object.extend("Song");
+
+var Song = Parse.Object.extend("Song", {
+  toJSON: function() {
+    return {
+      title: this.get("name"),
+      video: this.get("videoId"),
+      duration: this.get("duration"),
+      id: this.id,
+    };
+  }
+});
+
+var Playlist = Parse.Object.extend("Playlist", {
+  toJSON: function() {
+    return {
+      id: this.id,
+      name: this.get("name"),
+    }
+  }
+});
 
 
 var track = function(event, dimensions) {
@@ -34,6 +53,8 @@ var savedVideos = [];
 var videoOrder = [];
 var playTubeUser;
 
+var playlists = [];
+
 var generateRandomString = function(length) {
   var str = "";
   for (var x=0; x<length; x++) {
@@ -52,36 +73,15 @@ var generateRandomAlphaString = function(length) {
   return str;
 };
 
-var saveOldStyleVideos = function() {
-  chrome.storage.local.get("videos", function(items) {
-    if (items.videos) {
-      var objects = [];
-      for (var x in items.videos) {
-        var song = items.videos[x];
-
-        var songObj = new Song();
-        songObj.set("videoId", song.video);
-        songObj.set("name", song.title);
-        songObj.set("duration", song.duration);
-        songObj.set("user", playTubeUser);
-        songObj.setACL(new Parse.ACL(playTubeUser));
-        objects.push(songObj);
-
-        savedVideos.push(song);
-      }
-
-      generateNewOrder();
-
-      Parse.Object.saveAll(objects);
-
-      chrome.storage.local.remove("videos");
-    }
-  });
-};
-
-var getAllSongs = function(offset, allSongs, callback) {
+var getAllSongs = function(offset, allSongs, playlist, callback) {
   var songQuery = new Parse.Query(Song);
-  songQuery.equalTo("user", playTubeUser);
+
+  if (playlist) {
+    songQuery.equalTo("playlist", playlist);
+  } else {
+    songQuery.equalTo("user", playTubeUser);
+  }
+
   songQuery.skip(offset).limit(1000);
   songQuery.find().then(function(songs) {
     allSongs = allSongs.concat(songs);
@@ -104,20 +104,26 @@ chrome.storage.sync.get("user", function(items) {
     User.logIn(items.user.username, items.user.password).then(function(user) {
       playTubeUser = user;
 
-      getAllSongs(0, [], function(songs) {
+      getAllSongs(0, [], null, function(songs) {
         for (var x in songs) {
           var song = songs[x];
 
-          savedVideos.push({
-            title: song.get("name"),
-            video: song.get("videoId"),
-            duration: song.get("duration"),
-            id: song.id,
-          });
+          savedVideos.push(song);
         }
 
         generateNewOrder(true);
       });
+
+      var query = new Parse.Query(Playlist);
+      query.equalTo("user", user);
+      query.limit(1000);
+      query.find().then(function(plists) {
+        playlists = plists;
+      }, function() {
+        console.log("Error", arguments);
+      });
+
+
     }, function(error) {
       console.log("Error", arguments);
     });
@@ -142,9 +148,6 @@ chrome.storage.sync.get("user", function(items) {
           password: password
         }
       });
-
-      // Check if we had the old style of videos saved locally
-      saveOldStyleVideos();
     }, function() {
       console.log("Error", arguments);
     });
@@ -153,7 +156,7 @@ chrome.storage.sync.get("user", function(items) {
 
 var isVideoAlreadySaved = function(videoId) {
   for (var x = 0; x < savedVideos.length; x++) {
-    if (savedVideos[x].video == videoId) {
+    if (savedVideos[x].get("videoId") == videoId) {
       return true;
     }
   }
@@ -206,8 +209,6 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 });
 
 var addSong = function(song) {
-  savedVideos.push(song);
-
   generateNewOrder();
 
   // Save to parse
@@ -217,20 +218,33 @@ var addSong = function(song) {
   songObj.set("duration", song.duration);
   songObj.set("user", playTubeUser);
   songObj.setACL(new Parse.ACL(playTubeUser));
-  songObj.save();
+  songObj.save().then(function(song) {
+    savedVideos.push(song);
+  });
 
   track("songAdd");
 };
 
 var removeSong = function(song) {
-  var query = new Parse.Query(Song);
-  query.get(song.id).then(function(song) {
-    song.destroy();
+  song.destroy();
+
+  track("songRemove");
+};
+
+var getPlaylist = function(pid) {
+  var playlist = playlists[pid];
+
+  var relation = playlist.relation("songs");
+  relation.query().limit(1000).find().then(function(songs) {
+    sendMessage({
+      action: "recievePlaylistSongs",
+      songs: songs,
+      name: playlist.get("name"),
+      id: pid,
+    });
   }, function() {
     console.log("Error", arguments);
   });
-
-  track("songRemove");
 };
 
 chrome.runtime.onMessage.addListener(
@@ -261,6 +275,7 @@ chrome.runtime.onMessage.addListener(
         volume: volume,
         isShuffle: isShuffle,
         isRepeat: isRepeat,
+        playlists: playlists,
       });
       track("browserActionClick");
     }
@@ -270,6 +285,49 @@ chrome.runtime.onMessage.addListener(
         video: request.video,
         title: request.title,
         duration: request.duration,
+      });
+    }
+
+    if (request.action == "addPlaylist") {
+      var name = request.name;
+
+      var playlist = new Playlist();
+      playlist.set("name", name);
+      playlist.set("user", playTubeUser);
+      playlist.setACL(new Parse.ACL(playTubeUser));
+      playlist.save().then(function(playlist) {
+        playlists.push(playlist);
+
+        sendResponse(playlist.id);
+      });
+    }
+
+    if (request.action == "getPlaylistSongs") {
+      getPlaylist(request.playlist);
+    }
+
+    if (request.action == "playlistAddSong") {
+      var playlist = playlists[request.playlist];
+      var song = savedVideos[request.song];
+
+      var relation = playlist.relation("songs");
+
+      relation.add(song);
+    }
+
+    if (request.action == "playlistRemoveSong") {
+      var playlist = playlists[request.playlist];
+      var song = savedVideos[request.song];
+
+      var relation = playlist.relation("songs");
+
+      relation.remove(song);
+    }
+
+    if (request.action == "editModeLeave") {
+      var playlist = playlists[request.playlist];
+      playlist.save().then(function() {
+        getPlaylist(request.playlist);
       });
     }
 
@@ -407,12 +465,12 @@ var playVideo = function(video, relative, restart) {
   }
 
   createVideoTabIfNotExists(function(tab) {
-    if (tab.url.indexOf(savedVideos[video].video) != -1 && !restart) {
+    if (tab.url.indexOf(savedVideos[video].get("videoId")) != -1 && !restart) {
       chrome.tabs.sendMessage(tab.id, {action: "clickVideo"});
     } else {
       chrome.tabs.update(tab.id, {
         url: "https://www.youtube.com/watch?v=" +
-                savedVideos[video].video,
+                savedVideos[video].get("videoId"),
         pinned: true
       });
     }

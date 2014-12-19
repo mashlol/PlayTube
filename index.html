@@ -24,18 +24,24 @@
             <div class="song-progress top"></div>
             <button class="song-remove"><i class="fa fa-times"></i></button>
         </div>
+
+        <div class="playlist-button">
+            <div class="playlist-button-background"></div>
+            <div class="playlist-button-tint"></div>
+            <div class="playlist-button-title"></div>
+        </div>
     </div>
 
     <div class="navigation">
-        <div class="nav-button active">
+        <div class="nav-button active" opens="saved">
             <i class="fa fa-music"></i>
             <div class="nav-title">Saved</div>
         </div>
-        <div class="nav-button">
+        <div class="nav-button" opens="playlists">
             <i class="fa fa-play"></i>
             <div class="nav-title">Playlists</div>
         </div>
-        <div class="nav-button">
+        <div class="nav-button" opens="browse">
             <i class="fa fa-files-o"></i>
             <div class="nav-title">Browse</div>
         </div>
@@ -73,18 +79,53 @@
                 <button class="repeat active"><i class="fa fa-repeat"></i></button>
             </div>
         </div>
-        <div class="playlist">
-            <div class="help">
-                <p><strong>You have no saved songs! :(</strong></p>
-                <br />
-                <p>To save songs:</p>
-                <ol>
-                    <li>Navigate to a YouTube Video you wish to save</li>
-                    <li>Open this extension and press the "+" button in the top right</li>
-                    <li>OR, click the "+ Save" button on the YouTube video itself</li>
-                </ol>
-                <br />
-                <p>Enjoy!</p>
+        <div class="sections">
+            <div class="section saved">
+                <div class="playlist">
+                    <div class="help">
+                        <p><strong>You have no saved songs! :(</strong></p>
+                        <br />
+                        <p>To save songs:</p>
+                        <ol>
+                            <li>Navigate to a YouTube Video you wish to save</li>
+                            <li>Open this extension and press the "+" button in the top right</li>
+                            <li>OR, click the "+ Save" button on the YouTube video itself</li>
+                        </ol>
+                        <br />
+                        <p>Enjoy!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section playlists">
+                <div class="playlist-list">
+                     <div class="playlist-button playlist-add">
+                        <i class="fa fa-plus"></i>
+                        <input class="new-playlist-name" type="name" />
+                    </div>
+                </div>
+                <div class="playlist-full">
+                    <div class="playlist-header">
+                        <button class="playlist-back">
+                            <i class="fa fa-angle-left"></i> Back
+                        </button>
+                        <div class="playlist-header-name">
+                            Playlist header
+                        </div>
+                        <button class="playlist-edit">
+                            <span class="editing">
+                                <i class="fa fa-check"></i> Done
+                            </span>
+                            <span class="not-editing">
+                                <i class="fa fa-pencil-square-o"></i> Edit
+                            </span>
+                        </button>
+                    </div>
+                    <div class="playlist">
+                    </div>
+                </div>
+            </div>
+            <div class="section browse">
+                Browse Section
             </div>
         </div>
     </div>
