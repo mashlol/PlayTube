@@ -29,7 +29,7 @@ var looper = function() {
     .style.transform.substr(7, 17);
   var scaleNum = parseFloat(scale);
   var curTime = document.getElementsByClassName("ytp-time-current")[0]
-    .innerHTML;
+    .innerText;
   chrome.runtime.sendMessage({
     action: "updateSongProgress",
     amount: scaleNum * 100,
@@ -55,9 +55,9 @@ chrome.runtime.onMessage.addListener(
 
     if (request.action == "getVideoInfo") {
       sendResponse({
-        title: document.getElementById("eow-title").innerHTML.trim(),
+        title: document.getElementById("eow-title").innerText.trim(),
         duration: document.getElementsByClassName("ytp-time-duration")[0]
-                      .innerHTML.trim(),
+                      .innerText.trim(),
       });
     }
 
@@ -142,9 +142,9 @@ var addSaveButton = function() {
             chrome.runtime.sendMessage({
               action: "add",
               video: videoId,
-              title: document.getElementById("eow-title").innerHTML.trim(),
+              title: document.getElementById("eow-title").innerText.trim(),
               duration: document.getElementsByClassName("ytp-time-duration")[0]
-                            .innerHTML.trim(),
+                            .innerText.trim(),
             });
             btn.innerHTML = "✓ &nbsp;Saved";
             hasSaved = true;

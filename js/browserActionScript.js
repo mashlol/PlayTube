@@ -74,14 +74,14 @@ chrome.runtime.onMessage.addListener(
         width: (request.amount / 100) * 180 + opposite * 7 - 2
       });
 
-      $(".selected-curTime").html(request.curTime);
+      $(".selected-curTime").text(request.curTime);
 
       if (!$currentVideoEle) return;
 
       $currentVideoEle.find(".song-progress").css({
         width: request.amount + "%"
       });
-      $currentVideoEle.find(".song-curtime").html(request.curTime + " / ");
+      $currentVideoEle.find(".song-curtime").text(request.curTime + " / ");
     }
 
     if (request.action == "currentVideoUpdate") {
@@ -150,8 +150,8 @@ var changeSelectedVideo = function($videoEle, video, playlist) {
   });
   $(".song-curtime").html("");
 
-  $(".selected-title").html($currentVideoEle.find(".song-title").html());
-  $(".selected-totalTime").html($currentVideoEle.find(".song-duration").html());
+  $(".selected-title").text($currentVideoEle.find(".song-title").text());
+  $(".selected-totalTime").text($currentVideoEle.find(".song-duration").text());
 
   var top = currentVideo * 60 + 72.5;
   getCurrentPlaylistEle().animate({scrollTop: top - 240});
@@ -205,8 +205,8 @@ var togglePlayPause = function($videoEle) {
 var addVideoEle = function(video, index, $playlistEle) {
   $newSong = $("#templates .song").clone();
 
-  $newSong.find(".song-title").html(video.title);
-  $newSong.find(".song-duration").html(video.duration);
+  $newSong.find(".song-title").text(video.title);
+  $newSong.find(".song-duration").text(video.duration);
 
   $newSong.find(".background").css({
     "background": "url(https://i.ytimg.com/vi/" + video.video + "/default.jpg)",
@@ -773,8 +773,8 @@ $(function() {
       return;
     }
 
-    $(".selected-title").html(response.currentTitle);
-    $(".selected-totalTime").html(response.currentDuration);
+    $(".selected-title").text(response.currentTitle);
+    $(".selected-totalTime").text(response.currentDuration);
 
     if (isPlaying) {
       $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
