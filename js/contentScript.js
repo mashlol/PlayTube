@@ -91,6 +91,7 @@ chrome.runtime.onMessage.addListener(
 chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
   isPlayTab = response.isPlayTab;
   if (isPlayTab) {
+    volume = response.volmue;
     document.getElementsByClassName("video-stream")[0].volume =
           response.volume / 100;
     playButton = document.getElementsByClassName("ytp-button-pause")[0];
