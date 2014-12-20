@@ -21,6 +21,9 @@
     "scripts": ["./js/lib/parse.min.js", "./js/backgroundScript.js"]
   },
 
+  "content_security_policy":
+      "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+
   "commands": {
     "mediaNextSong": {
       "suggested_key": {

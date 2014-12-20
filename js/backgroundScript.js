@@ -55,10 +55,6 @@ var playlists = {};
 // -----------------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------------
-var track = function(event, dimensions) {
-  Parse.Analytics.track(event, dimensions);
-};
-
 var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
@@ -135,8 +131,6 @@ var isVideoAlreadySaved = function(videoId) {
 
 var removeSong = function(song) {
   song.destroy();
-
-  track("songRemove");
 };
 
 var addSong = function(song) {
@@ -152,8 +146,6 @@ var addSong = function(song) {
   songObj.save().then(function(song) {
     savedVideos.push(song);
   });
-
-  track("songAdd");
 };
 
 var getPlaylist = function(pid) {
@@ -517,7 +509,6 @@ chrome.runtime.onMessage.addListener(
         isRepeat: isRepeat,
         playlists: playlists,
       });
-      track("browserActionClick");
     }
 
     if (request.action == "add") {
@@ -691,8 +682,6 @@ chrome.runtime.onMessage.addListener(
         action: "updateLocation",
         location: request.location
       });
-
-      track("locationUpdate");
     }
 
     if (request.action == "isVideoAlreadySaved") {

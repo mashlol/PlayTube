@@ -1,10 +1,22 @@
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-40478447-8']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type =
+      'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
+})();
+
 Parse.initialize(
   "3LeDXoXIMPlclj6QhtMExSusuH9TIQcF3XSwkRcC",
   "rFGSoWE3oG7tiEidwu0rsaGYxUH1H35Fc3B7aMPf"
 );
 
-var track = function(event, dimensions) {
-  Parse.Analytics.track(event, dimensions);
+var track = function(event, action, label, value) {
+  _gaq.push(['_trackEvent', event, action, label, parseInt(value)]);
 };
 
 var sendMessage = function(message, callback) {
@@ -308,18 +320,18 @@ var createSpinner = function() {
 $(function() {
   $(".controls .play-pause").on("click", function(event) {
     togglePlayPause($(this));
-    track("playPause");
+    track("playPause", "clicked");
   });
 
   $(".controls .next").on("click", function(event) {
     nextVideo();
-    track("nextVideo");
+    track("nextVideo", "clicked");
   });
 
   $(".controls .previous").on("click", function(event) {
     previousVideo();
 
-    track("previousVideo");
+    track("previousVideo", "clicked");
   });
 
   $(".controls .volume-slider").on("input", function(event) {
@@ -336,10 +348,13 @@ $(function() {
   });
 
   $(".controls .location-slider").on("change", function() {
+    var location = $(".controls .location-slider").val();
     sendMessage({
       action: "updateLocation",
-      location: $(".controls .location-slider").val()
+      location: location
     });
+
+    track("song", "scrubbed", "", location);
   });
 
   $(".controls .shuffle").on("click", function() {
@@ -351,7 +366,7 @@ $(function() {
       isShuffle: isShuffle,
     });
 
-    track("shuffleToggle", {isShuffle: "" + isShuffle});
+    track("shuffleToggle", "clicked", "" + isShuffle);
   });
 
   $(".controls .repeat").on("click", function() {
@@ -359,7 +374,7 @@ $(function() {
 
     var isRepeat = $(".controls .repeat").hasClass("active");
 
-    track("repeatToggle", {isRepeat: "" + isRepeat});
+    track("repeatToggle", "clicked", "" + isRepeat);
   });
 
   $(".controls .search").on("click", function() {
@@ -372,9 +387,7 @@ $(function() {
       });
     }
 
-    track("searchToggle", {
-      visible: "" + $(".search-bar").hasClass("visible")
-    });
+    track("searchToggle", "clicked", "" + $(".search-bar").hasClass("visible"));
   });
 
   $(".search-bar").on("input", function() {
@@ -401,6 +414,8 @@ $(function() {
         return;
       }
 
+      track("song", "added", video);
+
       chrome.tabs.sendMessage(tab.id, {
         action: "getVideoInfo",
       }, function(response) {
@@ -411,8 +426,7 @@ $(function() {
           duration: response.duration,
         });
 
-        addVideoEle(
-          {
+        addVideoEle({
             video: video,
             title: response.title,
             duration: response.duration,
@@ -430,6 +444,8 @@ $(function() {
     var $videoEle = $(this).parent(".song");
     var video = $videoEle.attr("video");
 
+    track("song", "removed", $videoEle.attr("videoId"));
+
     // We should stop playing - we're removing the current song
     if (currentVideo == video && isPlaying) {
       sendMessage({action: "pause"});
@@ -443,6 +459,7 @@ $(function() {
 
     $videoEle.remove();
 
+    // TODO I feel like this causes bugs for sure...
     $(".song").each(function() {
       if ($(this).attr("video") > video) {
         $(this).attr("video", $(this).attr("video") - 1);
@@ -457,11 +474,14 @@ $(function() {
   $("body").on("click", ".song .play-pause", function(event) {
     togglePlayPause($(this).parent(".song"));
 
-    track("playPauseSpecific");
+    track("playPauseSpecific", "clicked",
+      $(this).parent(".song").attr("videoId"));
   });
 
   $(".nav-button").on("click", function() {
     var opens = $(this).attr("opens");
+
+    track("navigation", opens);
 
     $(".nav-button").removeClass("active");
     $(this).addClass("active");
@@ -489,6 +509,8 @@ $(function() {
 
   var addPlaylist = function() {
     var name = getPlaylistNameAndClear();
+
+    track("playlist", "added");
 
     sendMessage({action: "addPlaylist", name: name});
     createSpinner();
@@ -534,6 +556,8 @@ $(function() {
   });
 
   $(".playlist-edit").on("click", function() {
+    track("playlist", "editing");
+
     $(".playlist-edit").toggleClass("active");
 
     if ($(".playlist-edit").hasClass("active")) {
@@ -575,6 +599,7 @@ $(function() {
         playlist: $(this).parents(".playlist-full").attr("playlist"),
       });
       createSpinner();
+      track("playlist", "doneEditing");
     }
   });
 
@@ -616,6 +641,8 @@ $(function() {
 
     sendMessage({action: "removePlaylist", playlist: playlist});
 
+    track("playlist", "removed");
+
     event.stopPropagation();
   });
 
@@ -653,6 +680,7 @@ $(function() {
           playlist: playlist,
           name: newName,
         });
+        track("playlist", "renamed");
 
         $inputEle.remove();
 
@@ -673,6 +701,9 @@ $(function() {
       public: true,
     });
 
+    track("playlist", "setPublic");
+
+
     $playlistBtnEle.addClass("public");
 
     event.stopPropagation();
@@ -686,6 +717,8 @@ $(function() {
       playlist: $playlistBtnEle.attr("playlist"),
       public: false,
     });
+
+    track("playlist", "setPrivate");
 
     $playlistBtnEle.removeClass("public");
 
@@ -821,4 +854,6 @@ $(function() {
     var top = $currentVideoEle.offset().top;
     getCurrentPlaylistEle().animate({scrollTop: top - 240});
   });
+
+  track("app", "opened");
 });
