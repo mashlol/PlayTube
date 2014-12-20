@@ -1,4 +1,18 @@
 // -----------------------------------------------------------------------------
+// GA
+// -----------------------------------------------------------------------------
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-40478447-8']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type =
+      'text/javascript'; ga.async = true;
+  ga.src = 'https://ssl.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0];
+  s.parentNode.insertBefore(ga, s);
+})();
+
+// -----------------------------------------------------------------------------
 // Parse
 // -----------------------------------------------------------------------------
 Parse.initialize(
@@ -55,6 +69,10 @@ var playlists = {};
 // -----------------------------------------------------------------------------
 // Helpers
 // -----------------------------------------------------------------------------
+var track = function(event, action, label, value) {
+  _gaq.push(['_trackEvent', event, action, label, parseInt(value)]);
+};
+
 var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
@@ -478,6 +496,10 @@ chrome.runtime.onMessage.addListener(
 
     if (request.action == "pause") {
       pauseVideo();
+    }
+
+    if (request.action =- "songEnded") {
+      track("song", "ended");
     }
 
     if (request.action == "next" || request.action == "songEnded") {
