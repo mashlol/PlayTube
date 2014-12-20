@@ -37,7 +37,7 @@ var looper = function() {
   });
 
   document.getElementsByClassName("video-stream")[0].volume =
-      response.volume / 100;
+      volume / 100;
 };
 
 setInterval(looper, 400);
