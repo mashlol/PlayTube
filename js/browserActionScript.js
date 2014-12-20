@@ -459,8 +459,7 @@ $(function() {
 
     $videoEle.remove();
 
-    // TODO I feel like this causes bugs for sure...
-    $(".song").each(function() {
+    $(".section.saved .song").each(function() {
       if ($(this).attr("video") > video) {
         $(this).attr("video", $(this).attr("video") - 1);
       }
