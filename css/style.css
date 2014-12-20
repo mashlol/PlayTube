@@ -433,7 +433,7 @@ input[type=range]::-webkit-slider-runnable-track {
     display: block;
 }
 
-.song.song-playlist-edit:hover .song-remove {
+.playlist-full .song:hover .song-remove {
     display: none;
 }
 
@@ -441,7 +441,7 @@ input[type=range]::-webkit-slider-runnable-track {
     right: 50px;
 }
 
-.song.song-playlist-edit:hover .song-length {
+.playlist-full .song:hover .song-length {
     right: 10px;
 }
 
@@ -449,7 +449,7 @@ input[type=range]::-webkit-slider-runnable-track {
     width: 300px;
 }
 
-.song.song-playlist-edit:hover .song-title {
+.playlist-full .song:hover .song-title {
     width: 330px;
 }
 
