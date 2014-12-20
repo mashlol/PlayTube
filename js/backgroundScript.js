@@ -498,7 +498,7 @@ chrome.runtime.onMessage.addListener(
       pauseVideo();
     }
 
-    if (request.action =- "songEnded") {
+    if (request.action == "songEnded") {
       track("song", "ended");
     }
 
