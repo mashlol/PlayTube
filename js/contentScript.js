@@ -35,6 +35,9 @@ var looper = function() {
     amount: scaleNum * 100,
     curTime: curTime
   });
+
+  document.getElementsByClassName("video-stream")[0].volume =
+      response.volume / 100;
 };
 
 setInterval(looper, 400);
