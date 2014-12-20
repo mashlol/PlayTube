@@ -356,6 +356,25 @@ var previousVideo = function() {
   }
 };
 
+var updatePlaylistSongACLs = function(playlist) {
+  var relation = playlist.relation("songs");
+
+  relation.query().limit(1000).find().then(function(songs) {
+    for (var x in songs) {
+      var song = songs[x];
+
+      var acl = new Parse.ACL(song.get("user"));
+
+      if (playlist.get("public")) {
+        acl.setPublicReadAccess(true);
+      }
+
+      song.setACL(acl);
+      song.save();
+    }
+  });
+};
+
 
 // -----------------------------------------------------------------------------
 // Chrome stuff
@@ -563,6 +582,7 @@ chrome.runtime.onMessage.addListener(
 
         return playlist.save();
       }).then(function() {
+        updatePlaylistSongACLs(playlist);
         getPlaylist(request.playlist);
       });
     }
@@ -586,13 +606,17 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "playlistChangePublic") {
-      playlists[request.playlist].set("public", request.public);
+      var playlist = playlists[request.playlist];
+
+      playlist.set("public", request.public);
       var newACL = new Parse.ACL(playTubeUser);
       if (request.public) {
         newACL.setPublicReadAccess(true);
       }
-      playlists[request.playlist].setACL(newACL);
-      playlists[request.playlist].save();
+      playlist.setACL(newACL);
+      playlist.save();
+
+      updatePlaylistSongACLs(playlist);
     }
 
     if (request.action == "remove") {
