@@ -16,7 +16,7 @@ Parse.initialize(
 );
 
 var track = function(event, action, label, value) {
-  _gaq.push(['_trackEvent', event, action, label, parseInt(value)]);
+  _gaq.push(['_trackEvent', event, action, label, parseInt(value) || undefined]);
 };
 
 var sendMessage = function(message, callback) {
