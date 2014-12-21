@@ -153,8 +153,6 @@ var removeSong = function(song) {
 };
 
 var addSong = function(song) {
-  generateNewOrder();
-
   // Save to parse
   var songObj = new Song();
   songObj.set("videoId", song.video);
@@ -164,6 +162,7 @@ var addSong = function(song) {
   songObj.setACL(new Parse.ACL(playTubeUser));
   songObj.save().then(function(song) {
     savedVideos.push(song);
+    generateNewOrder();
   });
 };
 
