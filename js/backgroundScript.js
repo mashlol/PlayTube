@@ -501,7 +501,15 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "songEnded") {
-      track("song", "ended");
+      var videos = savedVideos;
+
+      if (currentPlaylist !== false) {
+        videos = playlists[currentPlaylist].songs;
+      }
+
+      var curSongObj = videos[videoOrder[currentVideo]];
+
+      track("song", "ended", curSongObj.get("videoId"));
     }
 
     if (request.action == "next" || request.action == "songEnded") {
@@ -724,13 +732,16 @@ chrome.runtime.onMessage.addListener(
 chrome.commands.onCommand.addListener(function(command) {
   if (command == "mediaNextSong") {
     nextVideo();
+    track("hotkey", "mediaNextSong");
   }
 
   if (command == "mediaPreviousSong") {
     previousVideo();
+    track("hotkey", "mediaPreviousSong");
   }
 
   if (command == "mediaPlayPause") {
+    track("hotkey", "mediaPlayPause");
     if (!isPlaying) {
       playVideo(currentVideo, currentPlaylist, true);
     } else {
