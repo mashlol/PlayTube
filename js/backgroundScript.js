@@ -122,6 +122,7 @@ var getAllSongs = function(offset, allSongs, playlist, callback) {
     songQuery.equalTo("user", playTubeUser);
   }
 
+  songQuery.ascending("createdAt");
   songQuery.skip(offset).limit(1000);
   songQuery.find().then(function(songs) {
     allSongs = allSongs.concat(songs);
