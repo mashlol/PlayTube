@@ -184,7 +184,8 @@ var getPlaylist = function(pid) {
   var playlist = playlists[pid];
 
   var relation = playlist.relation("songs");
-  relation.query().limit(1000).find().then(function(songs) {
+  relation.query().ascending("createdAt").limit(1000).find()
+      .then(function(songs) {
     sendMessage({
       action: "recievePlaylistSongs",
       songs: songs,
@@ -588,7 +589,7 @@ chrome.runtime.onMessage.addListener(
         // Add a new background for this playlist
         var relation = playlist.relation("songs");
 
-        return relation.query().limit(1).find();
+        return relation.query().ascending("createdAt").limit(1).find();
       }).then(function(songs) {
         if (songs.length > 0) {
           playlist.set("backgroundVideoId", songs[0].get("videoId"));
