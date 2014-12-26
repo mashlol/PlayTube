@@ -325,8 +325,10 @@ var playVideo = function(video, playlist, relative, restart) {
                                                         && playlist !== false) {
       var playlistObj = playlists[playlist];
       if (playlistObj.get("user").id != playTubeUser.id) {
-        playlistObj.increment("num_plays");
-        playlistObj.save();
+        Parse.Cloud.run('playlistView', {playlist: playlist}).then(function() {
+        }, function() {
+          console.log("Error");
+        });
       }
     }
 
