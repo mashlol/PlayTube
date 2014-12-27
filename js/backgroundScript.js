@@ -674,6 +674,7 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "browse") {
       var query = new Parse.Query(Playlist);
       query.equalTo("public", true);
+      query.exists("backgroundVideoId");
       query.notEqualTo("user", playTubeUser);
       query.descending("num_plays");
       query.find().then(function(plists) {
