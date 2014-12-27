@@ -227,7 +227,7 @@ ol {
     color: white;
 }
 
-.song-remove {
+.song-remove, .song-add {
     position: absolute;
     width: 40px;
     height: 40px;
@@ -243,13 +243,24 @@ ol {
     color: white;
 }
 
+.song-add .fa-check,
+.song-add.song-added .fa-plus {
+    display: none;
+}
+
+.song-add .fa-plus,
+.song-add.song-added .fa-check {
+    display: block;
+}
+
 .fa-check-square-o {
     position: relative;
     left: 1px;
 }
 
 .song.selected .song-remove,
-.song.selected .play-pause {
+.song.selected .play-pause,
+.song.selected .song-add {
     color: black;
 }
 
@@ -421,15 +432,21 @@ input[type=range]::-webkit-slider-runnable-track {
     left: 11px;
 }
 
-.song-remove:hover, .song .play-pause:hover {
+.song-remove:hover, .song .play-pause:hover,
+.song-add:hover {
     background: rgba(0,0,0,0.5);
 }
 
-.song.selected .song-remove {
+.song.selected .song-remove,
+.song.selected .song-add {
     top: 17.5px;
 }
 
 .song:hover .song-remove {
+    display: block;
+}
+
+.browse .song:hover .song-add {
     display: block;
 }
 
@@ -441,7 +458,7 @@ input[type=range]::-webkit-slider-runnable-track {
     right: 50px;
 }
 
-.playlist-full .song:hover .song-length {
+.playlists .playlist-full .song:hover .song-length {
     right: 10px;
 }
 

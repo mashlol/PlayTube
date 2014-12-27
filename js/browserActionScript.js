@@ -243,6 +243,10 @@ var addVideoEle = function(video, index, $playlistEle) {
     getCurrentPlaylistEle().animate({scrollTop: top - 240});
   }
 
+  if (isVideoAlreadySaved(video.video)) {
+    $newSong.find(".song-add").addClass("song-added");
+  }
+
   $playlistEle.append($newSong);
 
   noVideoCheck();
@@ -271,13 +275,7 @@ var createPlaylistEle = function(playlist, id, $playlistList) {
 };
 
 var isVideoAlreadySaved = function(videoId) {
-  for (var x = 0; x < $(".playlist .song").length; x++) {
-    if ($(".playlist .song").eq(x).attr("videoId") == videoId) {
-      return true;
-    }
-  }
-
-  return false;
+  return $(".playlist .song[videoId='" + videoId + "']").length != 0;
 };
 
 var getVideoIdFromUrl = function(url) {
@@ -752,6 +750,31 @@ $(function() {
         action: "browse",
       });
     }
+  });
+
+  $("body").on("click", ".song-add", function() {
+    var $songEle = $(this).parents(".song");
+    var videoId = $songEle.attr("videoId");
+    var title = $songEle.find(".song-title").text();
+    var duration = $songEle.find(".song-duration").text();
+
+    sendMessage({
+      action: "add",
+      video: videoId,
+      title: title,
+      duration: duration,
+    });
+
+    addVideoEle({
+        video: videoId,
+        title: title,
+        duration: duration,
+      },
+      $(".section.saved .playlist .song").length,
+      $(".section.saved .playlist")
+    );
+
+    $(this).addClass("song-added");
   });
 
   // Get what the current state is
