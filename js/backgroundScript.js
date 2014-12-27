@@ -167,8 +167,9 @@ var addSong = function(song) {
 };
 
 var getPlaylist = function(pid) {
-  // We don't want to update our songs for the current playlist
-  if (pid == currentPlaylist && playlists[currentPlaylist].songs) {
+  // We don't want to update our songs for the current playlist if it's not ours
+  if (pid == currentPlaylist && playlists[currentPlaylist].songs
+        && playlists[currentPlaylist].get("user").id != playTubeUser.id) {
     sendMessage({
       action: "recievePlaylistSongs",
       songs: playlists[currentPlaylist].songs,
