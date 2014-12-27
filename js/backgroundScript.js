@@ -546,6 +546,10 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "add") {
+      if (request.shortcut) {
+        track("song", "addedFromShortcut", request.video);
+      }
+
       addSong({
         video: request.video,
         title: request.title,

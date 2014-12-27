@@ -775,6 +775,8 @@ $(function() {
     );
 
     $(this).addClass("song-added");
+
+    track("song", "addedFromPublicPlaylist", videoId);
   });
 
   // Get what the current state is

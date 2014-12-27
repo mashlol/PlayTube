@@ -146,6 +146,7 @@ var addSaveButton = function() {
               title: document.getElementById("eow-title").innerText.trim(),
               duration: document.getElementsByClassName("ytp-time-duration")[0]
                             .innerText.trim(),
+              shortcut: true,
             });
             btn.innerHTML = "✓ &nbsp;Saved";
             hasSaved = true;
