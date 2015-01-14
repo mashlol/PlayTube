@@ -343,6 +343,38 @@ var playVideo = function(video, playlist, relative, restart) {
   });
 };
 
+var sendState = function() {
+  var videos = savedVideos;
+
+  if (currentPlaylist !== false) {
+    videos = playlists[currentPlaylist].songs;
+  }
+
+  var curSongObj = videos[videoOrder[currentVideo]];
+  if (curSongObj) {
+    var currentTitle = curSongObj.get("name");
+    var currentDuration = curSongObj.get("duration");
+  } else {
+    var currentTitle = "";
+    var currentDuration = "";
+  }
+
+
+  sendMessage({
+    action: "updateState",
+    videos: savedVideos,
+    currentVideo: videoOrder[currentVideo],
+    currentTitle: currentTitle,
+    currentDuration: currentDuration,
+    currentPlaylist: currentPlaylist,
+    isPlaying: isPlaying,
+    volume: volume,
+    isShuffle: isShuffle,
+    isRepeat: isRepeat,
+    playlists: playlists,
+  });
+};
+
 var pauseVideo = function() {
   if (!isPlaying) {
     return;
@@ -395,65 +427,80 @@ var updatePlaylistSongACLs = function(playlist) {
 // -----------------------------------------------------------------------------
 
 // Try to login
-chrome.storage.sync.get("user", function(items) {
-  // If we can login, we'll fetch our data from Parse
-  if (items.user && items.user.username && items.user.password) {
-    User.logIn(items.user.username, items.user.password).then(function(user) {
-      playTubeUser = user;
+var tryLogin = function(callback) {
+  chrome.storage.sync.get("user", function(items) {
+    // If we can login, we'll fetch our data from Parse
+    if (items.user && items.user.username && items.user.password) {
+      User.logIn(items.user.username, items.user.password).then(function(user) {
+        playTubeUser = user;
 
-      getAllSongs(0, [], null, function(songs) {
-        for (var x in songs) {
-          var song = songs[x];
+        getAllSongs(0, [], null, function(songs) {
+          for (var x in songs) {
+            var song = songs[x];
 
-          savedVideos.push(song);
-        }
+            savedVideos.push(song);
+          }
 
-        generateNewOrder(true);
+          generateNewOrder(true);
+
+          var query = new Parse.Query(Playlist);
+          query.equalTo("user", user);
+          query.limit(1000);
+          query.find().then(function(plists) {
+            for (var x in plists) {
+              var plist = plists[x];
+
+              playlists[plist.id] = plist;
+            }
+
+            callback(true);
+          }, function() {
+            console.log("Error", arguments);
+            callback(false);
+          });
+        });
+      }, function(error) {
+        console.log("Error", arguments);
+        callback(false);
       });
+    } else {
+      // Otherwise, we need to make a new user and save it
+      var username = generateRandomString(20);
+      var password = generateRandomString(20);
 
-      var query = new Parse.Query(Playlist);
-      query.equalTo("user", user);
-      query.limit(1000);
-      query.find().then(function(plists) {
-        for (var x in plists) {
-          var plist = plists[x];
+      var user = new User();
+      user.set("username", username);
+      user.set("password", password);
+      user.set(
+        "email",
+        generateRandomAlphaString(10) +
+          "@" +
+          generateRandomAlphaString(10) +
+          ".com"
+      );
+      user.signUp().then(function(user) {
+        playTubeUser = user;
 
-          playlists[plist.id] = plist;
-        }
+        chrome.storage.sync.set({
+          user: {
+            username: username,
+            password: password
+          }
+        });
+
+        callback(true);
       }, function() {
         console.log("Error", arguments);
+        callback(false);
       });
+    }
+  });
+};
 
+// Might as well try to login right away, it might not work, but would make
+// first launch faster if it does work.
+tryLogin(function(){});
 
-    }, function(error) {
-      console.log("Error", arguments);
-    });
-  } else {
-    // Otherwise, we need to make a new user and save it
-    var username = generateRandomString(20);
-    var password = generateRandomString(20);
-
-    var user = new User();
-    user.set("username", username);
-    user.set("password", password);
-    user.set(
-      "email",
-      generateRandomAlphaString(4) + "@" + generateRandomAlphaString(4) + ".com"
-    );
-    user.signUp().then(function(user) {
-      playTubeUser = user;
-
-      chrome.storage.sync.set({
-        user: {
-          username: username,
-          password: password
-        }
-      });
-    }, function() {
-      console.log("Error", arguments);
-    });
-  }
-});
 
 chrome.tabs.getSelected(null, function(tab) {
   oldActiveTabId = tab.id;
@@ -523,26 +570,25 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "state") {
-      var videos = savedVideos;
+      if (!playTubeUser) {
+        sendResponse({
+          error: "No user yet"
+        });
 
-      if (currentPlaylist !== false) {
-        videos = playlists[currentPlaylist].songs;
+        tryLogin(function(success) {
+          console.log("tryLogin", success);
+          if (success) {
+            sendState();
+          } else {
+            sendMessage({
+              action: "error",
+              error: "Unable to load, please try relaunching the app",
+            });
+          }
+        });
+      } else {
+        sendState();
       }
-
-      var curSongObj = videos[videoOrder[currentVideo]];
-
-      sendResponse({
-        videos: savedVideos,
-        currentVideo: videoOrder[currentVideo],
-        currentTitle: curSongObj.get("name"),
-        currentDuration: curSongObj.get("duration"),
-        currentPlaylist: currentPlaylist,
-        isPlaying: isPlaying,
-        volume: volume,
-        isShuffle: isShuffle,
-        isRepeat: isRepeat,
-        playlists: playlists,
-      });
     }
 
     if (request.action == "add") {

@@ -121,6 +121,113 @@ chrome.runtime.onMessage.addListener(
             .before(createPlaylistEle(playlist));
       }
     }
+
+    if (request.action == "error") {
+      $("body").html(request.error);
+    }
+
+    if (request.action == "updateState") {
+      $(".spinner").remove();
+
+      // Update our state
+      for (var x in request.playlists) {
+        var playlist = request.playlists[x];
+
+        // If its a public playlist, ignore it
+        if (!playlist.owned) {
+          continue;
+        }
+
+        $(".playlist-add").before(createPlaylistEle(playlist));
+      }
+
+      for (var x in request.videos) {
+        var video = request.videos[x];
+
+        addVideoEle(video, x, $(".section.saved .playlist"));
+      }
+
+      isPlaying = request.isPlaying;
+
+      chrome.tabs.getSelected(null, function(tab) {
+        var video = getVideoIdFromUrl(tab.url);
+
+        if (!video) {
+          return;
+        }
+
+        if (isVideoAlreadySaved(video)) {
+          $(".add").html("<i class='fa fa-check'></i>");
+        }
+      });
+
+      $(".controls .volume-slider").val(request.volume);
+      var opposite = (100 - request.volume) / 100;
+      $(".volume-slider-left").css({
+        width: (request.volume / 100) * 80 + opposite * 7 - 2
+      });
+
+      if (request.isRepeat) {
+        $(".controls .repeat").addClass("active");
+      }
+
+      if (request.isShuffle) {
+        $(".controls .shuffle").addClass("active");
+      }
+
+      if (noVideoCheck()) {
+        return;
+      }
+
+      $(".selected-title").text(request.currentTitle);
+      $(".selected-totalTime").text(request.currentDuration);
+
+      if (isPlaying) {
+        $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
+      }
+
+      currentVideo = request.currentVideo;
+      currentPlaylist = request.currentPlaylist;
+
+      if (currentPlaylist !== false) {
+        $(".nav-button").removeClass("active");
+        $(".section").hide();
+        $(".section").removeClass("active");
+
+        if (request.playlists[currentPlaylist].owned) {
+          $(".nav-button[opens='playlists']").addClass("active");
+
+          $(".section.playlists").show();
+          $(".section.playlists").addClass("active");
+        } else {
+          $(".nav-button[opens='browse']").addClass("active");
+
+          $(".section.browse").addClass("active");
+          $(".section.browse").show();
+        }
+
+        // Request to get this playlists songs
+        sendMessage({
+          action: "getPlaylistSongs",
+          playlist: currentPlaylist
+        });
+        createSpinner();
+
+        return;
+      }
+
+      $currentVideoEle =
+          getCurrentPlaylistEle().find(".song[video='" + currentVideo + "']");
+
+      if (isPlaying) {
+        $currentVideoEle.find(".play-pause")
+            .html("<i class='fa fa-pause'></i>");
+      }
+      $currentVideoEle.addClass("selected");
+
+      var top = $currentVideoEle.offset().top;
+      getCurrentPlaylistEle().animate({scrollTop: top - 240});
+    }
   }
 );
 
@@ -779,105 +886,8 @@ $(function() {
     track("song", "addedFromPublicPlaylist", videoId);
   });
 
-  // Get what the current state is
-  sendMessage({action: "state"}, function(response) {
-    for (var x in response.playlists) {
-      var playlist = response.playlists[x];
-
-      // If its a public playlist, ignore it
-      if (!playlist.owned) {
-        continue;
-      }
-
-      $(".playlist-add").before(createPlaylistEle(playlist));
-    }
-
-    for (var x in response.videos) {
-      var video = response.videos[x];
-
-      addVideoEle(video, x, $(".section.saved .playlist"));
-    }
-
-    isPlaying = response.isPlaying;
-
-    chrome.tabs.getSelected(null, function(tab) {
-      var video = getVideoIdFromUrl(tab.url);
-
-      if (!video) {
-        return;
-      }
-
-      if (isVideoAlreadySaved(video)) {
-        $(".add").html("<i class='fa fa-check'></i>");
-      }
-    });
-
-    $(".controls .volume-slider").val(response.volume);
-    var opposite = (100 - response.volume) / 100;
-    $(".volume-slider-left").css({
-      width: (response.volume / 100) * 80 + opposite * 7 - 2
-    });
-
-    if (response.isRepeat) {
-      $(".controls .repeat").addClass("active");
-    }
-
-    if (response.isShuffle) {
-      $(".controls .shuffle").addClass("active");
-    }
-
-    if (noVideoCheck()) {
-      return;
-    }
-
-    $(".selected-title").text(response.currentTitle);
-    $(".selected-totalTime").text(response.currentDuration);
-
-    if (isPlaying) {
-      $(".controls .play-pause").html("<i class='fa fa-pause'></i>");
-    }
-
-    currentVideo = response.currentVideo;
-    currentPlaylist = response.currentPlaylist;
-
-    if (currentPlaylist !== false) {
-      $(".nav-button").removeClass("active");
-      $(".section").hide();
-      $(".section").removeClass("active");
-
-      if (response.playlists[currentPlaylist].owned) {
-        $(".nav-button[opens='playlists']").addClass("active");
-
-        $(".section.playlists").show();
-        $(".section.playlists").addClass("active");
-      } else {
-        $(".nav-button[opens='browse']").addClass("active");
-
-        $(".section.browse").addClass("active");
-        $(".section.browse").show();
-      }
-
-      // Request to get this playlists songs
-      sendMessage({
-        action: "getPlaylistSongs",
-        playlist: currentPlaylist
-      });
-      createSpinner();
-
-      return;
-    }
-
-    $currentVideoEle =
-        getCurrentPlaylistEle().find(".song[video='" + currentVideo + "']");
-
-    if (isPlaying) {
-      $currentVideoEle.find(".play-pause").html("<i class='fa fa-pause'></i>");
-    }
-    $currentVideoEle.addClass("selected");
-
-    var top = $currentVideoEle.offset().top;
-    getCurrentPlaylistEle().animate({scrollTop: top - 240});
-  });
+  sendMessage({action: "state"});
+  createSpinner();
 
   track("app", "opened");
 });

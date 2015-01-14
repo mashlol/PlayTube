@@ -145,12 +145,12 @@ ol {
     top: 0;
     left: 0;
     z-index: -1;
-    width: 102%;
-    height: 130%;
-    -webkit-filter: blur(5px);
+    width: 112%;
+    height: 270%;
+    -webkit-filter: blur(20px);
     background-size: 100%;
-    margin-top: -2%;
-    margin-left: -1%;
+    margin-top: -17%;
+    margin-left: -4%;
     background-position-y: -40px;
 }
 
