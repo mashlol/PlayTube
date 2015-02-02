@@ -13,12 +13,12 @@
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
-      "js": ["./js/contentScript.js"]
+      "js": ["js/contentScript.js"]
     }
   ],
 
   "background": {
-    "scripts": ["./js/lib/parse.min.js", "./js/backgroundScript.js"]
+    "scripts": ["js/lib/parse.min.js", "js/backgroundScript.js"]
   },
 
   "content_security_policy":
