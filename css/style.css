@@ -52,8 +52,8 @@ ol {
 
 .nav-button.active {
     background: #2c3e50;
-    color: #2ecc71;
-    text-shadow: 0 0 10px #2ecc71;
+    color: #3498db;
+    text-shadow: 0 0 10px #3498db;
 }
 
 .nav-button i {
@@ -103,7 +103,7 @@ ol {
 
 .controls button:hover {
     background: #2c3e50;
-    text-shadow: 0 0 10px #2ecc71;
+    text-shadow: 0 0 10px #3498db;
 }
 
 .controls-top {
@@ -279,8 +279,8 @@ ol {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #2ecc71;
-    box-shadow: 0 0 5px 0px #2ecc71;
+    background: #3498db;
+    box-shadow: 0 0 5px 0px #3498db;
     border-radius: 2px;
 }
 
@@ -289,13 +289,13 @@ ol {
 }
 
 .song-progress {
-    background: #2ecc71;
+    background: #3498db;
     height: 1px;
     position: absolute;
     bottom: 0;
     width: 0%;
     left: 0;
-    box-shadow: 0 0 40px 6px #2ecc71;
+    box-shadow: 0 0 40px 6px #3498db;
     -webkit-transition: all 400ms linear;
 }
 
@@ -347,8 +347,8 @@ ol {
 
 .shuffle.active,
 .repeat.active {
-    color: #2ecc71;
-    text-shadow: 0 0 10px #2ecc71;
+    color: #3498db;
+    text-shadow: 0 0 10px #3498db;
 }
 
 .sliders {
@@ -376,9 +376,9 @@ input[type=range]::-webkit-slider-thumb {
     height: 8px;
     width: 8px;
     border-radius: 50%;
-    background: #2ecc71;
+    background: #3498db;
     margin-top: -3px;
-    box-shadow: 0 0 12px 1px #2ecc71;
+    box-shadow: 0 0 12px 1px #3498db;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -416,7 +416,7 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .slider-left {
     height: 2px;
-    background: #2ecc71;
+    background: #3498db;
     width: 0px;
     position: absolute;
     pointer-events: none;
@@ -513,7 +513,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-list .playlist-button:hover {
-    box-shadow: 0 0 6px -2px #2ecc71, 0 4px 5px -2px black;
+    box-shadow: 0 0 6px -2px #3498db, 0 4px 5px -2px black;
 }
 
 .playlist-list .playlist-button-tint {
@@ -554,7 +554,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-list .playlist-add {
-    border: 1px dashed #2ecc71;
+    border: 1px dashed #3498db;
 }
 
 .playlist-list .playlist-add:hover {
