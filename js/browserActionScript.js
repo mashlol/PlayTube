@@ -69,9 +69,10 @@ chrome.runtime.onMessage.addListener(
                                                             "']");
 
       $playlistButton.find(".playlist-button-background").css({
-        "background": "url(https://i.ytimg.com/vi/" +
+        // http://img.youtube.com/vi//<insert-youtube-video-id-here>/0.jpg
+        "background": "url(http://img.youtube.com/vi/" +
                                         request.background +
-                                        "/default.jpg)",
+                                        "/0.jpg)",
         "background-size": "200%",
         "background-position": "50% 50%",
       });
@@ -328,7 +329,7 @@ var addVideoEle = function(video, index, $playlistEle) {
   $newSong.find(".song-duration").text(video.duration);
 
   $newSong.find(".background").css({
-    "background": "url(https://i.ytimg.com/vi/" + video.video + "/default.jpg)",
+    "background": "url(http://img.youtube.com/vi/" + video.video + "/0.jpg)",
     "background-size": "120%",
     "background-position-y": "50%",
     "background-position-x": "50%",
@@ -370,9 +371,9 @@ var createPlaylistEle = function(playlist, id, $playlistList) {
 
   if (playlist.background) {
     $playlistBtnEle.find(".playlist-button-background").css({
-      "background": "url(https://i.ytimg.com/vi/" +
+      "background": "url(http://img.youtube.com/vi/" +
                                       playlist.background +
-                                      "/default.jpg)",
+                                      "/0.jpg)",
       "background-size": "200%",
       "background-position": "50% 50%",
     });
