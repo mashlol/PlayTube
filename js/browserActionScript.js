@@ -229,6 +229,12 @@ chrome.runtime.onMessage.addListener(
       var top = $currentVideoEle.offset().top;
       getCurrentPlaylistEle().animate({scrollTop: top - 240});
     }
+
+    if (request.action == "videoDataInfo") {
+      $(".song.selected .background").css({
+        background: "url(" + request.data + ") 50% 50% / 100%",
+      });
+    }
   }
 );
 
@@ -330,7 +336,7 @@ var addVideoEle = function(video, index, $playlistEle) {
 
   $newSong.find(".background").css({
     "background": "url(http://img.youtube.com/vi/" + video.video + "/0.jpg)",
-    "background-size": "120%",
+    "background-size": "100%",
     "background-position-y": "50%",
     "background-position-x": "50%",
   });

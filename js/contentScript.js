@@ -42,10 +42,34 @@ var looper = function() {
 
 setInterval(looper, 400);
 
+var animFrame = function() {
+  // requestAnimationFrame(animFrame);
+
+  if (!isPlayTab) {
+    return;
+  }
+
+  ctx.drawImage(document.getElementsByClassName("video-stream")[0],
+    0,
+    0,
+    300,
+    150
+  );
+
+  chrome.runtime.sendMessage({
+    action: "videoDataInfo",
+    data: canvas.toDataURL("image/png"),
+  });
+};
+
+// setInterval(animFrame, 17);
+
 var isPlayTab = false;
 var volume = 50;
 
 var playButton;
+var canvas;
+var ctx;
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -85,6 +109,10 @@ chrome.runtime.onMessage.addListener(
         addSaveButton();
       }, 1500);
     }
+
+    if (request.action == "tick") {
+      animFrame();
+    }
   }
 );
 
@@ -95,6 +123,9 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
     document.getElementsByClassName("video-stream")[0].volume =
           response.volume / 100;
     playButton = document.getElementsByClassName("ytp-button-pause")[0];
+
+    canvas = document.createElement("canvas");
+    ctx = canvas.getContext('2d');
   }
 });
 

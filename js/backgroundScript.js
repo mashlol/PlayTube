@@ -801,3 +801,17 @@ chrome.commands.onCommand.addListener(function(command) {
     }
   }
 });
+
+
+// This is to tell the content script to update our video
+var ticker = function() {
+  if (!videoTab) {
+    return;
+  }
+
+  chrome.tabs.sendMessage(videoTab.id, {
+    action: "tick"
+  });
+};
+
+setInterval(ticker, 40);
