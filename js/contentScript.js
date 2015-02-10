@@ -52,8 +52,8 @@ var animFrame = function() {
   ctx.drawImage(document.getElementsByClassName("video-stream")[0],
     0,
     0,
-    800,
-    400
+    400,
+    200
   );
 
   chrome.runtime.sendMessage({
@@ -125,8 +125,8 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
     playButton = document.getElementsByClassName("ytp-button-pause")[0];
 
     canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 400;
+    canvas.width = 400;
+    canvas.height = 200;
     ctx = canvas.getContext('2d');
   }
 });
