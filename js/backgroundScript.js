@@ -777,6 +777,10 @@ chrome.runtime.onMessage.addListener(
 
       generateNewOrder();
     }
+
+    if (request.action == "openInTab") {
+      chrome.tabs.create({url: chrome.extension.getURL('index.html')});
+    }
   }
 );
 

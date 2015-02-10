@@ -13,163 +13,170 @@
     <script src="./js/browserActionScript.js"></script>
 </head>
 <body>
-    <div id="templates">
-        <div class="song">
-            <div class="background"></div>
-            <div class="tint"></div>
-            <button class="play-pause"><i class="fa fa-play"></i></button>
-            <div class="song-title"></div>
-            <div class="song-length"><span class="song-curtime"></span> <span class="song-duration"></span></div>
-            <div class="song-progress"></div>
-            <!-- <div class="song-progress top"></div> -->
-            <button class="song-remove"><i class="fa fa-times"></i></button>
-            <button class="song-add"><i class="fa fa-plus"></i><i class="fa fa-check"></i></button>
-        </div>
-
-        <div class="playlist-button">
-            <div class="playlist-button-background"></div>
-            <div class="playlist-button-tint"></div>
-            <div class="playlist-button-title"></div>
-            <button class="playlist-button-options-toggle">
-                <i class="fa fa-ellipsis-v"></i>
-            </button>
-            <div class="playlist-button-options">
-                <div class="playlist-rename"><i class="fa fa-eraser"></i> Rename</div>
-                <div class="playlist-make-public"><i class="fa fa-group"></i> Make Public</div>
-                <div class="playlist-make-private"><i class="fa fa-group"></i> Make Private</div>
-                <div class="playlist-remove"><i class="fa fa-times"></i> Remove</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="navigation">
-        <div class="nav-button active" opens="saved">
-            <i class="fa fa-music"></i>
-            <div class="nav-title">Saved</div>
-        </div>
-        <div class="nav-button" opens="playlists">
-            <i class="fa fa-play"></i>
-            <div class="nav-title">Playlists</div>
-        </div>
-        <div class="nav-button" opens="browse">
-            <i class="fa fa-files-o"></i>
-            <div class="nav-title">Public Playlists</div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="controls">
-            <div class="line left"></div>
-            <div class="line right"></div>
-            <div class="controls-top">
-                <button class="previous"><i class="fa fa-step-backward"></i></button>
+    <div class="body">
+        <div id="templates">
+            <div class="song">
+                <div class="background"></div>
+                <div class="tint"></div>
                 <button class="play-pause"><i class="fa fa-play"></i></button>
-                <button class="next"><i class="fa fa-step-forward"></i></button>
-
-                <span class="selected-title"></span>
-
-                <input class="search-bar" type="search" />
-
-                <button class="add"><i class="fa fa-plus"></i></button>
-                <button class="search"><i class="fa fa-search"></i></button>
+                <div class="song-title"></div>
+                <div class="song-length"><span class="song-curtime"></span> <span class="song-duration"></span></div>
+                <div class="song-progress"></div>
+                <button class="song-remove"><i class="fa fa-times"></i></button>
+                <button class="song-add"><i class="fa fa-plus"></i><i class="fa fa-check"></i></button>
             </div>
-            <div class="sliders">
-                <div class="volume">
-                    <div class="slider-left volume-slider-left"></div>
-                    <i class="fa fa-volume-off"></i>
-                    <input class="volume-slider" type="range" min="0" max="100" step="0.1" value="50" />
-                    <i class="fa fa-volume-down"></i>
+
+            <div class="playlist-button">
+                <div class="playlist-button-background"></div>
+                <div class="playlist-button-tint"></div>
+                <div class="playlist-button-title"></div>
+                <button class="playlist-button-options-toggle">
+                    <i class="fa fa-ellipsis-v"></i>
+                </button>
+                <div class="playlist-button-options">
+                    <div class="playlist-rename"><i class="fa fa-eraser"></i> Rename</div>
+                    <div class="playlist-make-public"><i class="fa fa-group"></i> Make Public</div>
+                    <div class="playlist-make-private"><i class="fa fa-group"></i> Make Private</div>
+                    <div class="playlist-remove"><i class="fa fa-times"></i> Remove</div>
                 </div>
-                <div class="location">
-                    <div class="slider-left location-slider-left"></div>
-                    <input class="location-slider" type="range" min="0" max="100" step="0.1" value="0" />
-                    <span class="selected-length"><span class="selected-curTime">0:00</span> / <span class="selected-totalTime">0:00</span></span>
-                </div>
-                <button class="shuffle"><i class="fa fa-random"></i></button>
-                <button class="repeat active"><i class="fa fa-repeat"></i></button>
             </div>
         </div>
-        <div class="sections">
-            <div class="section saved">
-                <div class="playlist">
-                    <div class="help">
-                        <p><strong>You have no saved songs! :(</strong></p>
-                        <br />
-                        <p>To save songs:</p>
-                        <ol>
-                            <li>Navigate to a YouTube Video you wish to save</li>
-                            <li>Open this extension and press the "+" button in the top right</li>
-                            <li>OR, click the "+ Save" button on the YouTube video itself</li>
-                        </ol>
-                        <br />
-                        <p>Enjoy!</p>
-                    </div>
-                </div>
-            </div>
-            <div class="section playlists">
-                <div class="playlist-list">
-                    <div class="playlist-list-search">
-                        <i class="fa fa-search"></i>
-                        <input type="search" />
-                    </div>
-                     <div class="playlist-button playlist-add">
-                        <i class="fa fa-plus"></i>
-                        <input class="new-playlist-name" type="name" />
-                    </div>
-                </div>
-                <div class="playlist-full">
-                    <div class="playlist-header">
-                        <button class="playlist-back">
-                            <i class="fa fa-angle-left"></i> Back
-                        </button>
-                        <div class="playlist-header-name">
-                            Playlist header
-                        </div>
-                        <button class="playlist-edit">
-                            <span class="editing">
-                                <i class="fa fa-check"></i> Done
-                            </span>
-                            <span class="not-editing">
-                                <i class="fa fa-pencil-square-o"></i> Edit
-                            </span>
-                        </button>
-                    </div>
-                    <div class="playlist-help">
-                        <p><strong>This playlist is empty! :(</strong></p>
-                        <br />
-                        <p>To add songs songs:</p>
-                        <ol>
-                            <li>Make sure you've saved the songs you want into your saved songs list</li>
-                            <li>Press edit in the top right</li>
-                            <li>Check the songs you want in this playlist (note search works here)</li>
-                            <li>Press done</li>
-                        </ol>
-                        <br />
-                        <p>Enjoy your playlist!</p>
-                    </div>
-                    <div class="playlist">
-                    </div>
-                </div>
-            </div>
-            <div class="section browse">
-                <div class="playlist-list">
-                    <div class="playlist-list-search">
-                        <i class="fa fa-search"></i>
-                        <input type="search" />
-                    </div>
-                    <div class="playlist-list-footer">Your public playlists can be seen here by others</div>
-                </div>
 
-                <div class="playlist-full">
-                    <div class="playlist-header">
-                        <button class="playlist-back">
-                            <i class="fa fa-angle-left"></i> Back
-                        </button>
-                        <div class="playlist-header-name">
-                            Playlist header
+        <div class="navigation">
+            <div class="nav-button active" opens="saved">
+                <i class="fa fa-music"></i>
+                <div class="nav-title">Saved</div>
+            </div>
+            <div class="nav-button" opens="playlists">
+                <i class="fa fa-play"></i>
+                <div class="nav-title">Playlists</div>
+            </div>
+            <div class="nav-button" opens="browse">
+                <i class="fa fa-users"></i>
+                <div class="nav-title">Public Playlists</div>
+            </div>
+
+            <div class="nav-bottom">
+                <div class="open-tab-button">
+                    <i class="fa fa-expand"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="controls">
+                <div class="line left"></div>
+                <div class="line right"></div>
+                <div class="controls-top">
+                    <button class="previous"><i class="fa fa-step-backward"></i></button>
+                    <button class="play-pause"><i class="fa fa-play"></i></button>
+                    <button class="next"><i class="fa fa-step-forward"></i></button>
+
+                    <span class="selected-title"></span>
+
+                    <input class="search-bar" type="search" />
+
+                    <button class="add"><i class="fa fa-plus"></i></button>
+                    <button class="search"><i class="fa fa-search"></i></button>
+                </div>
+                <div class="sliders">
+                    <div class="volume">
+                        <div class="slider-left volume-slider-left"></div>
+                        <i class="fa fa-volume-off"></i>
+                        <input class="volume-slider" type="range" min="0" max="100" step="0.1" value="50" />
+                        <i class="fa fa-volume-down"></i>
+                    </div>
+                    <div class="location">
+                        <div class="slider-left location-slider-left"></div>
+                        <input class="location-slider" type="range" min="0" max="100" step="0.1" value="0" />
+                        <span class="selected-length"><span class="selected-curTime">0:00</span> / <span class="selected-totalTime">0:00</span></span>
+                    </div>
+                    <button class="shuffle"><i class="fa fa-random"></i></button>
+                    <button class="repeat active"><i class="fa fa-repeat"></i></button>
+                </div>
+            </div>
+            <div class="sections">
+                <div class="section saved">
+                    <div class="playlist">
+                        <div class="help">
+                            <p><strong>You have no saved songs! :(</strong></p>
+                            <br />
+                            <p>To save songs:</p>
+                            <ol>
+                                <li>Navigate to a YouTube Video you wish to save</li>
+                                <li>Open this extension and press the "+" button in the top right</li>
+                                <li>OR, click the "+ Save" button on the YouTube video itself</li>
+                            </ol>
+                            <br />
+                            <p>Enjoy!</p>
                         </div>
                     </div>
-                    <div class="playlist">
+                </div>
+                <div class="section playlists">
+                    <div class="playlist-list">
+                        <div class="playlist-list-search">
+                            <i class="fa fa-search"></i>
+                            <input type="search" />
+                        </div>
+                         <div class="playlist-button playlist-add">
+                            <i class="fa fa-plus"></i>
+                            <input class="new-playlist-name" type="name" />
+                        </div>
+                    </div>
+                    <div class="playlist-full">
+                        <div class="playlist-header" style="display: none;">
+                            <button class="playlist-back">
+                                <i class="fa fa-angle-left"></i> Back
+                            </button>
+                            <div class="playlist-header-name">
+                                Playlist header
+                            </div>
+                            <button class="playlist-edit">
+                                <span class="editing">
+                                    <i class="fa fa-check"></i> Done
+                                </span>
+                                <span class="not-editing">
+                                    <i class="fa fa-pencil-square-o"></i> Edit
+                                </span>
+                            </button>
+                        </div>
+                        <div class="playlist-help" style="display: none;">
+                            <p><strong>This playlist is empty! :(</strong></p>
+                            <br />
+                            <p>To add songs songs:</p>
+                            <ol>
+                                <li>Make sure you've saved the songs you want into your saved songs list</li>
+                                <li>Press edit in the top right</li>
+                                <li>Check the songs you want in this playlist (note search works here)</li>
+                                <li>Press done</li>
+                            </ol>
+                            <br />
+                            <p>Enjoy your playlist!</p>
+                        </div>
+                        <div class="playlist" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="section browse">
+                    <div class="playlist-list">
+                        <div class="playlist-list-search">
+                            <i class="fa fa-search"></i>
+                            <input type="search" />
+                        </div>
+                        <div class="playlist-list-footer">Your public playlists can be seen here by others</div>
+                    </div>
+
+                    <div class="playlist-full">
+                        <div class="playlist-header" style="display: none;">
+                            <button class="playlist-back">
+                                <i class="fa fa-angle-left"></i> Back
+                            </button>
+                            <div class="playlist-header-name">
+                                Playlist header
+                            </div>
+                        </div>
+                        <div class="playlist" style="display: none;">
+                        </div>
                     </div>
                 </div>
             </div>

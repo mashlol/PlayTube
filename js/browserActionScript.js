@@ -84,7 +84,7 @@ chrome.runtime.onMessage.addListener(
 
       var opposite = (100 - request.amount) / 100;
       $(".location-slider-left").css({
-        width: (request.amount / 100) * 180 + opposite * 7 - 2
+        width: (request.amount / 100) * $(".location-slider").width() + opposite * 7 - 2
       });
 
       $(".selected-curTime").text(request.curTime);
@@ -227,7 +227,9 @@ chrome.runtime.onMessage.addListener(
       $currentVideoEle.addClass("selected");
 
       var top = $currentVideoEle.offset().top;
-      getCurrentPlaylistEle().animate({scrollTop: top - 240});
+      getCurrentPlaylistEle().animate({
+        scrollTop: top - window.innerHeight / 2 + 35
+      });
     }
 
     if (request.action == "videoDataInfo") {
@@ -280,7 +282,9 @@ var changeSelectedVideo = function($videoEle, video, playlist) {
   $(".selected-totalTime").text($currentVideoEle.find(".song-duration").text());
 
   var top = currentVideo * 60 + 72.5;
-  getCurrentPlaylistEle().animate({scrollTop: top - 240});
+  getCurrentPlaylistEle().animate({
+    scrollTop: top - window.innerHeight / 2  + 35
+  });
 };
 
 var nextVideo = function() {
@@ -354,7 +358,9 @@ var addVideoEle = function(video, index, $playlistEle) {
     }
 
     var top = currentVideo * 60 + 72.5;
-    getCurrentPlaylistEle().animate({scrollTop: top - 240});
+    getCurrentPlaylistEle().animate({
+      scrollTop: top - window.innerHeight / 2 + 35
+    });
   }
 
   if (isVideoAlreadySaved(video.video)) {
@@ -891,6 +897,12 @@ $(function() {
     $(this).addClass("song-added");
 
     track("song", "addedFromPublicPlaylist", videoId);
+  });
+
+  $(".nav-bottom").on("click", function() {
+    sendMessage({
+      action: "openInTab",
+    });
   });
 
   sendMessage({action: "state"});

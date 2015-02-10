@@ -13,6 +13,16 @@ body {
     height: 480px;
 }
 
+.body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    /* border: 1px solid #ccc; */
+}
+
 #templates {
     display: none;
 }
@@ -26,7 +36,7 @@ ol {
 }
 
 .navigation {
-    height: 480px;
+    height: 100%;
     width: 60px;
     text-align: center;
     background: #2c3e50;
@@ -71,7 +81,7 @@ ol {
     background: #34495e;
     position: fixed;
     top: 0;
-    width: 480px;
+    width: calc(100% - 60px);
     z-index: 2;
     box-shadow: 0 0 5px black;
     font-size: 0;
@@ -118,26 +128,38 @@ ol {
 }
 
 .container {
-    width: 480px;
+    width: 100%;
     position: absolute;
     top: 0;
     left: 60px;
-    height: 480px;
+    height: 100%;
 }
 
 .sections {
-    margin-top: 80px;
-    height: 400px;
+    margin-top: 0px;
+    height: 100%;
     position: relative;
 }
 
+.section {
+    display: none;
+}
+
+.section.saved {
+    display: block;
+}
+
 .playlist {
-    height: 400px;
+    height: calc(100% - 80px);
     overflow-y: scroll;
+    position: absolute;
+    width: calc(100% - 60px);
+    top: 80px;
 }
 
 .playlist-full .playlist {
-    height: 370px;
+    top: 30px;
+    height: calc(100% - 110px);
 }
 
 .background, .tint {
@@ -167,6 +189,8 @@ ol {
     line-height: 60px;
     color: white;
     -webkit-transition: height 500ms ease-in-out;
+    /*box-shadow: 0 0 5px #444;*/
+    border-bottom: 1px solid #222;
 }
 
 .song.selected {
@@ -316,13 +340,14 @@ ol {
     color: #fff;
     margin-left: 16px;
     text-overflow: ellipsis;
-    width: 246px;
+    width: calc(100% - 220px);
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
     vertical-align: middle;
     font-size: 12px;
     margin-top: -5px;
+    text-align: center;
 }
 
 .shuffle {
@@ -399,10 +424,11 @@ input[type=range]::-webkit-slider-runnable-track {
     display: inline-block;
     margin-left: 20px;
     position: relative;
+    width: calc(100% - 220px);
 }
 
 .location-slider {
-    width: 180px;
+    width: calc(100% - 70px);
     margin-right: 10px;
 }
 
@@ -412,7 +438,7 @@ input[type=range]::-webkit-slider-runnable-track {
     width: 0px;
     position: absolute;
     pointer-events: none;
-    -webkit-transition: all 250ms ease-in-out;
+    /*-webkit-transition: all 250ms ease-in-out;*/
 }
 
 .location-slider-left {
@@ -481,14 +507,20 @@ input[type=range]::-webkit-slider-runnable-track {
 
 .search-bar.visible {
     padding: 10px;
-    width: 245px;
+    width: calc(100% - 220px);
 }
 
 .playlist-list {
     padding: 10px 0 10px 10px;
     font-size: 0;
     overflow-y: scroll;
-    height: 400px;
+    /* height: 100%; */
+    position: absolute;
+    top: 0;
+}
+
+.playlist-full {
+    margin-top: 80px;
 }
 
 .playlist-list .playlist-button {
@@ -576,6 +608,7 @@ input[type=range]::-webkit-slider-runnable-track {
     line-height: 30px;
     background: #24394e;
     color: #eee;
+    width: calc(100% - 60px);
 }
 
 .playlist-header .playlist-header-name {
@@ -695,6 +728,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-list-search {
+    width: calc(100% - 60px);
     padding: 0px 0 20px 0;
     position: relative;
 }
@@ -735,4 +769,12 @@ input[type=range]::-webkit-slider-runnable-track {
 .playlist-list-footer {
     font-size: 12px;
     text-align: center;
+}
+
+.nav-bottom {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    padding: 5px;
+    cursor: pointer;
 }
