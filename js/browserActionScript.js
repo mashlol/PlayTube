@@ -230,12 +230,13 @@ chrome.runtime.onMessage.addListener(
       getCurrentPlaylistEle().animate({
         scrollTop: top - window.innerHeight / 2 + 35
       });
+      $currentVideoEle.append($("canvas"));
     }
 
     if (request.action == "videoDataInfo") {
-      $(".song.selected .background").css({
-        background: "url(" + request.data + ") 50% 50% / 100%",
-      });
+      var img = new Image();
+      img.src = request.data;
+      ctx.drawImage(img, 0, 0);
     }
   }
 );
@@ -244,6 +245,7 @@ var currentVideo;
 var currentPlaylist = false;
 var $currentVideoEle;
 var isPlaying = false;
+var ctx;
 
 var getCurrentPlaylistEle = function() {
   if (currentPlaylist === false) {
@@ -285,6 +287,7 @@ var changeSelectedVideo = function($videoEle, video, playlist) {
   getCurrentPlaylistEle().animate({
     scrollTop: top - window.innerHeight / 2  + 35
   });
+  $currentVideoEle.append($("canvas"));
 };
 
 var nextVideo = function() {
@@ -361,6 +364,7 @@ var addVideoEle = function(video, index, $playlistEle) {
     getCurrentPlaylistEle().animate({
       scrollTop: top - window.innerHeight / 2 + 35
     });
+    $currentVideoEle.append($("canvas"));
   }
 
   if (isVideoAlreadySaved(video.video)) {
@@ -909,4 +913,6 @@ $(function() {
   createSpinner();
 
   track("app", "opened");
+
+  ctx = $("canvas")[0].getContext('2d');
 });
