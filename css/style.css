@@ -517,6 +517,8 @@ input[type=range]::-webkit-slider-runnable-track {
     /* height: 100%; */
     position: absolute;
     top: 0;
+    width: calc(100% - 60px);
+    height: calc(100% - 80px);
 }
 
 .playlist-full {
@@ -728,7 +730,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .playlist-list-search {
-    width: calc(100% - 60px);
+    width: calc(100% - 10px);
     padding: 0px 0 20px 0;
     position: relative;
 }
