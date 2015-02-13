@@ -539,8 +539,6 @@ chrome.tabs.onActivated.addListener(function(activeInfo) {
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(request);
-
     if (request.action == "play") {
       playVideo(request.video, request.playlist);
     }
@@ -816,6 +814,7 @@ var ticker = function() {
   chrome.tabs.sendMessage(videoTab.id, {
     action: "tick"
   });
+
 };
 
-setInterval(ticker, 40);
+setInterval(ticker, 50);

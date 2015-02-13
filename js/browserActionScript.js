@@ -234,9 +234,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "videoDataInfo") {
-      var img = new Image();
-      img.src = request.data;
-      ctx.drawImage(img, 0, 0);
+      curImageData = request.data;
     }
   }
 );
@@ -246,6 +244,16 @@ var currentPlaylist = false;
 var $currentVideoEle;
 var isPlaying = false;
 var ctx;
+var curImageData = false;
+
+var renderThread = function() {
+  var img = new Image();
+  img.src = curImageData;
+  ctx.drawImage(img, 0, 0);
+
+  requestAnimationFrame(renderThread);
+};
+requestAnimationFrame(renderThread);
 
 var getCurrentPlaylistEle = function() {
   if (currentPlaylist === false) {
