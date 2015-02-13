@@ -51,6 +51,6 @@ To modify a playlist:
 
 ### Screenshot
 
-![Screenshot](http://i.imgur.com/o4Q8Ws7.png)
+![Screenshot](http://i.imgur.com/94ggSM7.png)
 ![Screenshot](http://i.imgur.com/3ZRDMlE.png)
 
