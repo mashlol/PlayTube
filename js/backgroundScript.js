@@ -811,6 +811,11 @@ var ticker = function() {
     return;
   }
 
+  var views = chrome.extension.getViews({type: "popup"});
+  if (!views.length) {
+    return;
+  }
+
   chrome.tabs.sendMessage(videoTab.id, {
     action: "tick"
   });

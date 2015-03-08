@@ -36,20 +36,17 @@ var looper = function() {
     curTime: curTime
   });
 
-  document.getElementsByClassName("video-stream")[0].volume =
-      volume / 100;
+  video.volume = volume / 100;
 };
 
 setInterval(looper, 400);
 
 var animFrame = function() {
-  // requestAnimationFrame(animFrame);
-
   if (!isPlayTab) {
     return;
   }
 
-  ctx.drawImage(document.getElementsByClassName("video-stream")[0],
+  ctx.drawImage(video,
     0,
     0,
     400,
@@ -62,14 +59,14 @@ var animFrame = function() {
   });
 };
 
-// setInterval(animFrame, 17);
-
 var isPlayTab = false;
 var volume = 50;
 
 var playButton;
 var canvas;
 var ctx;
+
+var video;
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -88,19 +85,16 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "updateVolume") {
       volume = request.volume;
       if (isPlayTab) {
-        document.getElementsByClassName("video-stream")[0].volume =
-            volume / 100;
+        video.volume = volume / 100;
       }
     }
 
     if (request.action == "updateLocation") {
       if (isPlayTab) {
         var location = request.location;
-        var duration =
-            document.getElementsByClassName("video-stream")[0].duration;
+        var duration = video.duration;
 
-        document.getElementsByClassName("video-stream")[0].currentTime =
-            duration * (location / 100);
+        video.currentTime = duration * (location / 100);
       }
     }
 
@@ -119,10 +113,12 @@ chrome.runtime.onMessage.addListener(
 chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
   isPlayTab = response.isPlayTab;
   if (isPlayTab) {
+    video = document.getElementsByClassName("video-stream")[0];
+
     volume = response.volume;
-    document.getElementsByClassName("video-stream")[0].volume =
-          response.volume / 100;
+    video.volume = volume / 100;
     playButton = document.getElementsByClassName("ytp-button-pause")[0];
+
 
     canvas = document.createElement("canvas");
     canvas.width = 400;
