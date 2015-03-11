@@ -291,7 +291,7 @@ var changeSelectedVideo = function($videoEle, video, playlist) {
   $(".selected-title").text($currentVideoEle.find(".song-title").text());
   $(".selected-totalTime").text($currentVideoEle.find(".song-duration").text());
 
-  var top = currentVideo * 60 + 72.5;
+  var top = currentVideo * 70 + 90;
   getCurrentPlaylistEle().animate({
     scrollTop: top - window.innerHeight / 2  + 35
   });
@@ -368,7 +368,7 @@ var addVideoEle = function(video, index, $playlistEle) {
       $newSong.find(".play-pause").html("<i class='fa fa-pause'></i>");
     }
 
-    var top = currentVideo * 60 + 72.5;
+    var top = currentVideo * 70 + 90;
     getCurrentPlaylistEle().animate({
       scrollTop: top - window.innerHeight / 2 + 35
     });

@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="navigation">
+<!--         <div class="navigation">
             <div class="nav-button active" opens="saved">
                 <i class="fa fa-music"></i>
                 <div class="nav-title">Saved</div>
@@ -61,38 +61,52 @@
                     <i class="fa fa-expand"></i>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="container">
             <div class="controls">
-                <div class="line left"></div>
-                <div class="line right"></div>
-                <div class="controls-top">
-                    <button class="previous"><i class="fa fa-step-backward"></i></button>
-                    <button class="play-pause"><i class="fa fa-play"></i></button>
-                    <button class="next"><i class="fa fa-step-forward"></i></button>
-
-                    <span class="selected-title"></span>
-
-                    <input class="search-bar" type="search" />
-
-                    <button class="add"><i class="fa fa-plus"></i></button>
-                    <button class="search"><i class="fa fa-search"></i></button>
+                <div class="controls-left">
+                    <div class="logo"></div>
+                    <div class="nav-button active" opens="saved">
+                        <div class="nav-title">Saved</div>
+                    </div>
+                    <div class="nav-button" opens="playlists">
+                        <div class="nav-title">Playlists</div>
+                    </div>
+                    <div class="nav-button" opens="browse">
+                        <div class="nav-title">Public</div>
+                    </div>
                 </div>
-                <div class="sliders">
-                    <div class="volume">
-                        <div class="slider-left volume-slider-left"></div>
-                        <i class="fa fa-volume-off"></i>
-                        <input class="volume-slider" type="range" min="0" max="100" step="0.1" value="50" />
-                        <i class="fa fa-volume-down"></i>
+                <div class="controls-right">
+                    <div class="line left"></div>
+                    <div class="line right"></div>
+                    <div class="controls-top">
+                        <button class="previous"><i class="fa fa-step-backward"></i></button>
+                        <button class="play-pause"><i class="fa fa-play"></i></button>
+                        <button class="next"><i class="fa fa-step-forward"></i></button>
+
+                        <span class="selected-title"></span>
+
+                        <input class="search-bar" type="search" />
+
+                        <button class="add"><i class="fa fa-plus"></i></button>
+                        <button class="search"><i class="fa fa-search"></i></button>
                     </div>
-                    <div class="location">
-                        <div class="slider-left location-slider-left"></div>
-                        <input class="location-slider" type="range" min="0" max="100" step="0.1" value="0" />
-                        <span class="selected-length"><span class="selected-curTime">0:00</span> / <span class="selected-totalTime">0:00</span></span>
+                    <div class="sliders">
+                        <div class="volume">
+                            <div class="slider-left volume-slider-left"></div>
+                            <i class="fa fa-volume-off"></i>
+                            <input class="volume-slider" type="range" min="0" max="100" step="0.1" value="50" />
+                            <i class="fa fa-volume-down"></i>
+                        </div>
+                        <div class="location">
+                            <div class="slider-left location-slider-left"></div>
+                            <input class="location-slider" type="range" min="0" max="100" step="0.1" value="0" />
+                            <span class="selected-length"><span class="selected-curTime">0:00</span> / <span class="selected-totalTime">0:00</span></span>
+                        </div>
+                        <button class="shuffle"><i class="fa fa-random"></i></button>
+                        <button class="repeat active"><i class="fa fa-repeat"></i></button>
                     </div>
-                    <button class="shuffle"><i class="fa fa-random"></i></button>
-                    <button class="repeat active"><i class="fa fa-repeat"></i></button>
                 </div>
             </div>
             <div class="sections">
