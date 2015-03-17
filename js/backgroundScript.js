@@ -97,7 +97,7 @@ var getVideoIdFromUrl = function(url) {
 
 var generateRandomString = function(length) {
   var str = "";
-  for (var x=0; x<length; x++) {
+  for (var x = 0; x < length; x++) {
     str += String.fromCharCode(Math.floor(Math.random() * 92 + 33));
   }
 
@@ -106,7 +106,7 @@ var generateRandomString = function(length) {
 
 var generateRandomAlphaString = function(length) {
   var str = "";
-  for (var x=0; x<length; x++) {
+  for (var x = 0; x < length; x++) {
     str += String.fromCharCode(Math.floor(Math.random() * 25 + 97));
   }
 
@@ -122,7 +122,7 @@ var getAllSongs = function(offset, allSongs, playlist, callback) {
     songQuery.equalTo("user", playTubeUser);
   }
 
-  songQuery.ascending("createdAt");
+  songQuery.descending("createdAt");
   songQuery.skip(offset).limit(1000);
   songQuery.find().then(function(songs) {
     allSongs = allSongs.concat(songs);
@@ -161,8 +161,17 @@ var addSong = function(song) {
   songObj.set("user", playTubeUser);
   songObj.setACL(new Parse.ACL(playTubeUser));
   songObj.save().then(function(song) {
-    savedVideos.push(song);
+    savedVideos.unshift(song);
     generateNewOrder();
+
+    var currentVideoId = parseInt(videoOrder[currentVideo]) + 1;
+    for (var x in videoOrder) {
+      if (videoOrder[x] == currentVideoId) {
+        currentVideo = parseInt(x);
+
+        break;
+      }
+    }
   });
 };
 
@@ -695,25 +704,20 @@ chrome.runtime.onMessage.addListener(
     if (request.action == "remove") {
       var removedSong = savedVideos.splice(request.video, 1)[0];
 
-      var toRemove = [];
+      generateNewOrder();
 
-      for (var x in videoOrder) {
-        var vidId = videoOrder[x];
+      var currentVideoId = parseInt(videoOrder[currentVideo]);
 
-        // We need to remove anything which references the highest song
-        // since there's one less song now.
-        // Anything we remove that's before our current song, we should also
-        // decrease the current song index so we account for that.
-        if (vidId == savedVideos.length) {
-          toRemove.push(x);
-          if (currentVideo > x) {
-            currentVideo--;
-          }
-        }
+      if (currentVideoId > request.video) {
+        currentVideoId--;
       }
 
-      for (var x in toRemove) {
-        videoOrder.splice(toRemove[x], 1);
+      for (var x in videoOrder) {
+        if (videoOrder[x] == currentVideoId) {
+          currentVideo = parseInt(x);
+
+          break;
+        }
       }
 
       removeSong(removedSong);

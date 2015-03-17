@@ -89,6 +89,12 @@ chrome.runtime.onMessage.addListener(
 
       $(".selected-curTime").text(request.curTime);
 
+      $(".location-slider").css({
+        width: "calc(100% - " +
+          ($(".selected-length").text().length * 6 + 8) +
+          "px)",
+      });
+
       if (!$currentVideoEle) return;
 
       $currentVideoEle.find(".song-progress").css({
@@ -343,7 +349,7 @@ var togglePlayPause = function($videoEle) {
   currentPlaylist = playlist;
 };
 
-var addVideoEle = function(video, index, $playlistEle) {
+var addVideoEle = function(video, index, $playlistEle, prepend) {
   $newSong = $("#templates .song").clone();
 
   $newSong.find(".song-title").text(video.title);
@@ -379,7 +385,11 @@ var addVideoEle = function(video, index, $playlistEle) {
     $newSong.find(".song-add").addClass("song-added");
   }
 
-  $playlistEle.append($newSong);
+  if (prepend) {
+    $playlistEle.prepend($newSong);
+  } else {
+    $playlistEle.append($newSong);
+  }
 
   noVideoCheck();
 };
@@ -549,6 +559,7 @@ $(function() {
       chrome.tabs.sendMessage(tab.id, {
         action: "getVideoInfo",
       }, function(response) {
+        console.log(response);
         sendMessage({
           action: "add",
           video: video,
@@ -556,13 +567,15 @@ $(function() {
           duration: response.duration,
         });
 
+
         addVideoEle({
             video: video,
             title: response.title,
             duration: response.duration,
           },
           $(".section.saved .playlist .song").length,
-          $(".section.saved .playlist")
+          $(".section.saved .playlist"),
+          true
         );
 
         $(".add").html("<i class='fa fa-check'></i>");
