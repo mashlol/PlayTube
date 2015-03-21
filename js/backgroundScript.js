@@ -135,6 +135,7 @@ var getAllSongs = function(offset, allSongs, playlist, callback) {
     getAllSongs(offset + 1000, allSongs, callback);
   }, function() {
     console.log("Error", arguments);
+    track("error", "1");
   });
 };
 
@@ -212,6 +213,7 @@ var getPlaylist = function(pid) {
     playlist.songs = songs;
   }, function() {
     console.log("Error", arguments);
+    track("error", "2");
   });
 };
 
@@ -344,6 +346,7 @@ var playVideo = function(video, playlist, relative, restart) {
         Parse.Cloud.run('playlistView', {playlist: playlist}).then(function() {
         }, function() {
           console.log("Error");
+          track("error", "3");
         });
       }
     }
@@ -491,12 +494,14 @@ var tryLogin = function() {
             callback(true);
           }, function() {
             console.log("Error", arguments);
+            track("error", "4");
             tryingToLogin = false;
             callback(false);
           });
         });
       }, function(error) {
         console.log("Error", arguments);
+        track("error", "5");
         tryingToLogin = false;
         callback(false);
       });
@@ -530,6 +535,7 @@ var tryLogin = function() {
         callback(true);
       }, function() {
         console.log("Error", arguments);
+        track("error", "6");
         tryingToLogin = false;
         callback(false);
       });
