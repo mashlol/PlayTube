@@ -153,6 +153,10 @@ var removeSong = function(song) {
 };
 
 var addSong = function(song) {
+  if (!playTubeUser) {
+    return false;
+  }
+
   // Save to parse
   var songObj = new Song();
   songObj.set("videoId", song.video);
@@ -173,6 +177,8 @@ var addSong = function(song) {
       }
     }
   });
+
+  return true;
 };
 
 var getPlaylist = function(pid) {
@@ -436,7 +442,25 @@ var updatePlaylistSongACLs = function(playlist) {
 // -----------------------------------------------------------------------------
 
 // Try to login
-var tryLogin = function(callback) {
+var tryingToLogin = false;
+var successfullyLoggedIn = false;
+var tryLogin = function() {
+  if (tryingToLogin) {
+    return;
+  }
+
+  var callback = function(success) {
+    if (success) {
+      sendState();
+    } else {
+      sendMessage({
+        action: "error",
+        error: "Unable to load, please try relaunching the app",
+      });
+    }
+  };
+
+  tryingToLogin = true;
   chrome.storage.sync.get("user", function(items) {
     // If we can login, we'll fetch our data from Parse
     if (items.user && items.user.username && items.user.password) {
@@ -462,14 +486,18 @@ var tryLogin = function(callback) {
               playlists[plist.id] = plist;
             }
 
+            tryingToLogin = false;
+            successfullyLoggedIn = true;
             callback(true);
           }, function() {
             console.log("Error", arguments);
+            tryingToLogin = false;
             callback(false);
           });
         });
       }, function(error) {
         console.log("Error", arguments);
+        tryingToLogin = false;
         callback(false);
       });
     } else {
@@ -497,9 +525,12 @@ var tryLogin = function(callback) {
           }
         });
 
+        tryingToLogin = false;
+        successfullyLoggedIn = true;
         callback(true);
       }, function() {
         console.log("Error", arguments);
+        tryingToLogin = false;
         callback(false);
       });
     }
@@ -508,7 +539,7 @@ var tryLogin = function(callback) {
 
 // Might as well try to login right away, it might not work, but would make
 // first launch faster if it does work.
-tryLogin(function(){});
+tryLogin();
 
 
 chrome.tabs.getSelected(null, function(tab) {
@@ -523,13 +554,6 @@ chrome.tabs.onRemoved.addListener(function(tabId) {
 });
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
-  // TODO possibly add this back
-  // if (tabId == videoTab.id && changeInfo.url &&
-  //       getVideoIdFromUrl(changeInfo.url) != savedVideos[videoOrder[currentVideo]].video) {
-  //   isPlaying = false;
-  //   sendMessage({action: "update", isPlaying: false});
-  // }
-
   if (changeInfo.url && changeInfo.url.indexOf("youtube") != -1) {
     chrome.tabs.getSelected(null, function(tab) {
       chrome.tabs.sendMessage(tab.id, {action: "urlChanged"});
@@ -577,21 +601,9 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.action == "state") {
-      if (!playTubeUser) {
-        sendResponse({
+      if (!successfullyLoggedIn) {
+        sendMessage({
           error: "No user yet"
-        });
-
-        tryLogin(function(success) {
-          console.log("tryLogin", success);
-          if (success) {
-            sendState();
-          } else {
-            sendMessage({
-              action: "error",
-              error: "Unable to load, please try relaunching the app",
-            });
-          }
         });
       } else {
         sendState();
@@ -603,11 +615,13 @@ chrome.runtime.onMessage.addListener(
         track("song", "addedFromShortcut", request.video);
       }
 
-      addSong({
+      var success = addSong({
         video: request.video,
         title: request.title,
         duration: request.duration,
       });
+
+      sendResponse(success);
     }
 
     if (request.action == "addPlaylist") {

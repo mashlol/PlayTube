@@ -23,6 +23,14 @@ var sendMessage = function(message, callback) {
   chrome.runtime.sendMessage(message, callback);
 };
 
+var getBackgroundImageFromVideoId = function(videoId) {
+  var hashIndex = videoId.indexOf('#');
+  if (hashIndex !== -1) {
+    videoId = videoId.substring(0, hashIndex);
+  }
+  return "url(http://img.youtube.com/vi/" + videoId + "/0.jpg)";
+};
+
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     if (request.action == "update") {
@@ -44,9 +52,9 @@ chrome.runtime.onMessage.addListener(
           .text(request.name);
 
       if (request.songs.length > 0) {
-          $(".section.active .playlist-help").hide();
+        $(".section.active .playlist-help").hide();
       } else {
-          $(".section.active .playlist-help").show();
+        $(".section.active .playlist-help").show();
       }
 
       for (var x in request.songs) {
@@ -69,10 +77,7 @@ chrome.runtime.onMessage.addListener(
                                                             "']");
 
       $playlistButton.find(".playlist-button-background").css({
-        // http://img.youtube.com/vi//<insert-youtube-video-id-here>/0.jpg
-        "background": "url(http://img.youtube.com/vi/" +
-                                        request.background +
-                                        "/0.jpg)",
+        "background": getBackgroundImageFromVideoId(request.background),
         "background-size": "200%",
         "background-position": "50% 50%",
       });
@@ -356,7 +361,7 @@ var addVideoEle = function(video, index, $playlistEle, prepend) {
   $newSong.find(".song-duration").text(video.duration);
 
   $newSong.find(".background").css({
-    "background": "url(http://img.youtube.com/vi/" + video.video + "/0.jpg)",
+    background: getBackgroundImageFromVideoId(video.video),
     "background-size": "100%",
     "background-position-y": "50%",
     "background-position-x": "50%",
@@ -405,9 +410,7 @@ var createPlaylistEle = function(playlist, id, $playlistList) {
 
   if (playlist.background) {
     $playlistBtnEle.find(".playlist-button-background").css({
-      "background": "url(http://img.youtube.com/vi/" +
-                                      playlist.background +
-                                      "/0.jpg)",
+      background: getBackgroundImageFromVideoId(playlist.background),
       "background-size": "200%",
       "background-position": "50% 50%",
     });

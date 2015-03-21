@@ -176,9 +176,19 @@ var addSaveButton = function() {
               duration: document.getElementsByClassName("ytp-time-duration")[0]
                             .innerText.trim(),
               shortcut: true,
+            }, function(response) {
+              if (!response) {
+                alert(
+                  "Unable to add song, please try again.  If this error " +
+                  "keeps occurring, try disabling and re-enabling the " +
+                  "extension"
+                );
+              } else {
+                btn.innerHTML = "✓ &nbsp;Saved";
+                hasSaved = true;
+              }
             });
-            btn.innerHTML = "✓ &nbsp;Saved";
-            hasSaved = true;
+
           };
         } else {
           btn.innerHTML = "✓ &nbsp;Saved";
