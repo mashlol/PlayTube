@@ -21,7 +21,7 @@ var looper = function() {
     return;
   }
 
-  if (document.getElementsByClassName("ytp-button-replay").length ||
+  if (document.querySelector(".ytp-play-button").title === "Replay" ||
      !document.getElementById('player-unavailable').classList.contains('hid')) {
     chrome.runtime.sendMessage({action: "songEnded"});
   }
