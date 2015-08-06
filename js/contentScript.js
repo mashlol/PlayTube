@@ -21,19 +21,27 @@ var looper = function() {
     return;
   }
 
-  if (document.getElementsByClassName("ytp-button-replay").length) {
+  if (document.getElementsByClassName("ytp-button-replay").length ||
+     !document.getElementById('player-unavailable').classList.contains('hid')) {
     chrome.runtime.sendMessage({action: "songEnded"});
   }
 
-  var scale = document.getElementsByClassName("ytp-play-progress")[0]
-    .style.transform.substr(7, 17);
-  var scaleNum = parseFloat(scale);
-  var curTime = document.getElementsByClassName("ytp-time-current")[0]
-    .innerText;
+  var scale = video.currentTime / video.duration;
+
+  var curSeconds = parseInt(video.currentTime);
+  var hours = parseInt(curSeconds / 3600) % 24;
+  var minutes = parseInt(curSeconds / 60) % 60;
+  var seconds = curSeconds % 60;
+
+  var curTime = minutes + ':' + (seconds > 10 ? seconds : '0' + seconds);
+  if (hours) {
+    curTime = hours + ':' + curTime;
+  }
+
   chrome.runtime.sendMessage({
     action: "updateSongProgress",
-    amount: scaleNum * 100,
-    curTime: curTime
+    amount: scale * 100,
+    curTime: curTime,
   });
 
   video.volume = volume / 100;
@@ -117,7 +125,7 @@ chrome.runtime.sendMessage({action: "isPlayTab"}, function(response) {
 
     volume = response.volume;
     video.volume = volume / 100;
-    playButton = document.getElementsByClassName("ytp-button-pause")[0];
+    playButton = document.getElementsByClassName("ytp-play-button")[0];
 
 
     canvas = document.createElement("canvas");
